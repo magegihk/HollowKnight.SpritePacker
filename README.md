@@ -1,5 +1,6 @@
 # HollowKnight.SpritePacker
 English | [简体中文](./README_cn.md)
+
 Pack sprites that are dumped by GODump mod back into atlas.
 
 ## Usage

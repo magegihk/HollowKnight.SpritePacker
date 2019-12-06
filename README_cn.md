@@ -1,5 +1,6 @@
 # HollowKnight.SpritePacker
 [English](./README.md) | 简体中文
+
 将用GODump mod导出的《空洞骑士》中游戏对象的精灵图（sprite）重新包装回图集（atlas）。
 
 ## 使用

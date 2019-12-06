@@ -457,13 +457,7 @@ namespace HollowKnight.SpritePacker
             }
         }
 
-        private void ListBox4_MouseClick(object sender, MouseEventArgs e)
-        {
-        }
-
-        private void ListBox5_MouseClick(object sender, MouseEventArgs e)
-        {
-        }
+ 
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
