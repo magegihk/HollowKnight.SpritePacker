@@ -21,5 +21,6 @@
   <Main_Button3>Pack</Main_Button3>
   <Message_Error01>Sprite dirctory doesn't exist.Please check "Get single sprites" below.</Message_Error01>
   <Message_Error02>Repeated sprites below in this collection are modified differently.Try again after replace the rest of them with the one you need.</Message_Error02>
+  <Message_Error03>Press Check to make sure Pack is doable.</Message_Error03>
   <Message_01>Good to go.</Message_01>
 </en-US>

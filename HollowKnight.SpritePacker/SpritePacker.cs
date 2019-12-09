@@ -96,8 +96,8 @@ namespace HollowKnight.SpritePacker
                         _anim = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[0];
                         _clip = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[1];
                         refreshing = true;
-                        listBox1.SelectedIndex = listBox1.FindString(_anim);
-                        listBox2.SelectedIndex = listBox2.FindString(_clip);
+                        listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
+                        listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
                         refreshing = false;
                     }
                 }
@@ -187,15 +187,15 @@ namespace HollowKnight.SpritePacker
                         listBox5.Items.Add(collection.name);
                 }
 
-                listBox1.SelectedIndex = listBox1.FindString(_anim);
-                listBox2.SelectedIndex = listBox2.FindString(_clip);
-                listBox3.SelectedIndex = listBox3.FindString(_frame);
-                listBox4.SelectedIndex = listBox4.FindString(_oriatlas);
-                listBox5.SelectedIndex = listBox5.FindString(_genatlas);
+                listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
+                listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
+                listBox3.SelectedIndex = listBox3.FindStringExact(_frame);
+                listBox4.SelectedIndex = listBox4.FindStringExact(_oriatlas);
+                listBox5.SelectedIndex = listBox5.FindStringExact(_genatlas);
             }
             else
             {
-                Log("[Error01]" + GlobalData.GlobalLanguage.Message_Error01);
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
             }
             refreshing = false;
         }
@@ -260,7 +260,10 @@ namespace HollowKnight.SpritePacker
 
         private void Pack(Collection collection)
         {
+            progressBar1.Visible = true;
             Bitmap genatlas = new Bitmap(collection.info.FullName);
+            int num = 0;
+            int progression = 0;
             foreach (var frame in collection.frames)
             {
                 Bitmap image = new Bitmap(frame.info.FullName);
@@ -271,12 +274,24 @@ namespace HollowKnight.SpritePacker
                     {
                         int x = frame.sprite.flipped ? frame.sprite.x + j : frame.sprite.x + i;
                         int y = frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 : genatlas.Height - (frame.sprite.y + j) - 1;
-                        genatlas.SetPixel(x, y, image.GetPixel(i, image.Height - j - 1));
+                        if (x >= 0 && y >= 0)
+                        {
+                            genatlas.SetPixel(x, y, image.GetPixel(i, image.Height - j - 1));
+                        }
                     }
                 }
+                num++;
+                progression = (int)(100 * num / collection.frames.Count);
+                progressBar1.Value = progression;
+                if (progression == 100)
+                {
+                    progressBar1.Visible = false;
+                }
             }
-            genatlas.Save(collection.info.DirectoryName + "\\Gen-" + collection.info.Name + ".png");
+            string savepath = collection.info.DirectoryName + "\\Gen-" + collection.info.Name;
+            genatlas.Save(savepath);
             Log("Pack Done");
+            Log(savepath);
         }
 
         #endregion Graphics
@@ -424,7 +439,7 @@ namespace HollowKnight.SpritePacker
                             if ((collection.frames[i].sprite.id == collection.frames[i + 1].sprite.id) && !FrameMD5HashEquals(collection.frames[i], collection.frames[i + 1]))
                             {
                                 goodtopack = false;
-                                Log("[Warning] " + GlobalData.GlobalLanguage.Message_Error02);
+                                Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
                                 Log("[" + collection.frames[i].info.FullName + "] <-> [" + collection.frames[i + 1].info.FullName + "]");
                                 return;
                             }
@@ -454,6 +469,10 @@ namespace HollowKnight.SpritePacker
                         Pack(collection);
                     }
                 }
+            }
+            else
+            {
+                Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
             }
         }
 

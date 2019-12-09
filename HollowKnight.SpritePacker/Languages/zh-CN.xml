@@ -21,5 +21,6 @@
   <Main_Button3>打包</Main_Button3>
   <Message_Error01>精灵图目录不存在，请查看下方“如何导出精灵图”。</Message_Error01>
   <Message_Error02>当前图集存在以下精灵图被重复使用，重复精灵图被修改后不相同，请使之一致后再试。</Message_Error02>
+  <Message_Error03>请先按检查，确认可以打包。</Message_Error03>
   <Message_01>可以打包。</Message_01>
 </zh-CN>

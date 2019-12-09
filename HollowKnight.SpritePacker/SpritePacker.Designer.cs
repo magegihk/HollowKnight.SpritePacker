@@ -92,6 +92,7 @@
             this.listBox6 = new System.Windows.Forms.ListBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,6 +106,28 @@
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button2.Location = new System.Drawing.Point(684, 451);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(55, 23);
+            this.button2.TabIndex = 20;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button3.Location = new System.Drawing.Point(745, 451);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(55, 23);
+            this.button3.TabIndex = 21;
+            this.button3.Text = "button3";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // comboBox1
             // 
@@ -149,6 +172,26 @@
             this.label3.Text = "label3";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // label4
+            // 
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label4.Location = new System.Drawing.Point(494, 319);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(120, 14);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "label4";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label5
+            // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label5.Location = new System.Drawing.Point(651, 319);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(120, 12);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "label5";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // label6
             // 
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -158,6 +201,16 @@
             this.label6.TabIndex = 12;
             this.label6.Text = "label6";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label7.Location = new System.Drawing.Point(494, 9);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(277, 12);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "label7";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label8
             // 
@@ -238,47 +291,6 @@
             this.listBox3.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListBox3_MouseClick);
             this.listBox3.SelectedIndexChanged += new System.EventHandler(this.ListBox3_SelectedIndexChanged);
             // 
-            // listBox6
-            // 
-            this.listBox6.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.listBox6.FormattingEnabled = true;
-            this.listBox6.HorizontalScrollbar = true;
-            this.listBox6.ItemHeight = 12;
-            this.listBox6.Location = new System.Drawing.Point(23, 24);
-            this.listBox6.Name = "listBox6";
-            this.listBox6.ScrollAlwaysVisible = true;
-            this.listBox6.Size = new System.Drawing.Size(434, 88);
-            this.listBox6.TabIndex = 6;
-            this.listBox6.SelectedIndexChanged += new System.EventHandler(this.ListBox6_SelectedIndexChanged);
-            this.listBox6.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListBox6_MouseDoubleClick);
-            // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // button2
-            // 
-            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button2.Location = new System.Drawing.Point(684, 451);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(55, 23);
-            this.button2.TabIndex = 20;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button3
-            // 
-            this.button3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button3.Location = new System.Drawing.Point(745, 451);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(55, 23);
-            this.button3.TabIndex = 21;
-            this.button3.Text = "button3";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // listBox4
             // 
             this.listBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
@@ -303,6 +315,20 @@
             this.listBox5.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListBox5_MouseClick);
             this.listBox5.SelectedIndexChanged += new System.EventHandler(this.ListBox5_SelectedIndexChanged);
             // 
+            // listBox6
+            // 
+            this.listBox6.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.listBox6.FormattingEnabled = true;
+            this.listBox6.HorizontalScrollbar = true;
+            this.listBox6.ItemHeight = 12;
+            this.listBox6.Location = new System.Drawing.Point(23, 24);
+            this.listBox6.Name = "listBox6";
+            this.listBox6.ScrollAlwaysVisible = true;
+            this.listBox6.Size = new System.Drawing.Size(434, 88);
+            this.listBox6.TabIndex = 6;
+            this.listBox6.SelectedIndexChanged += new System.EventHandler(this.ListBox6_SelectedIndexChanged);
+            this.listBox6.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListBox6_MouseDoubleClick);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -314,41 +340,25 @@
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             // 
-            // label4
+            // timer1
             // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label4.Location = new System.Drawing.Point(494, 319);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(120, 14);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "label4";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // label5
+            // progressBar1
             // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label5.Location = new System.Drawing.Point(651, 319);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(120, 12);
-            this.label5.TabIndex = 11;
-            this.label5.Text = "label5";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label7
-            // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label7.Location = new System.Drawing.Point(494, 9);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(277, 12);
-            this.label7.TabIndex = 14;
-            this.label7.Text = "label7";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.progressBar1.Location = new System.Drawing.Point(745, 451);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(55, 23);
+            this.progressBar1.TabIndex = 22;
+            this.progressBar1.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 480);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label9);
@@ -386,6 +396,8 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
