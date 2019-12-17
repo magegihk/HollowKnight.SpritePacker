@@ -14,6 +14,7 @@ namespace HollowKnight.SpritePacker
         private bool refreshing;
         private bool goodtopack = false;
         private bool check = false;
+        private bool fixedmode = false;
         private string _anim = "";
         private string _clip = "";
         private string _frame = "";
@@ -48,11 +49,15 @@ namespace HollowKnight.SpritePacker
             label7.Text = GlobalData.GlobalLanguage.Main_Label7;
             label8.Text = GlobalData.GlobalLanguage.Main_Label8;
             label9.Text = GlobalData.GlobalLanguage.Main_Label9;
+            label10.Text = GlobalData.GlobalLanguage.Main_Label10;
             linkLabel1.Text = GlobalData.GlobalLanguage.Main_LinkLabel1;
             linkLabel2.Text = GlobalData.GlobalLanguage.Main_LinkLabel2;
             button1.Text = GlobalData.GlobalLanguage.Main_Button1;
             button2.Text = GlobalData.GlobalLanguage.Main_Button2;
             button3.Text = GlobalData.GlobalLanguage.Main_Button3;
+            comboBox2.Items.Add(GlobalData.GlobalLanguage.Main_ComboBoxItem1);
+            comboBox2.Items.Add(GlobalData.GlobalLanguage.Main_ComboBoxItem2);
+
         }
 
         public void Log(string s)
@@ -139,6 +144,8 @@ namespace HollowKnight.SpritePacker
             listBox4.Items.Clear();
             listBox5.Items.Clear();
             listBox6.Items.Clear();
+            comboBox2.Items.Clear();
+            comboBox2.SelectedIndex = comboBox2.SelectedIndex;
             Collection.collections.Clear();
             Collection.gencollections.Clear();
 
@@ -200,11 +207,11 @@ namespace HollowKnight.SpritePacker
             refreshing = false;
         }
 
-        private static string CalculateMD5(string filename)
+        private string CalculateMD5(Frame frame)
         {
             using (var md5 = MD5.Create())
             {
-                using (var stream = File.OpenRead(filename))
+                using (var stream = File.OpenRead(frame.info.FullName))
                 {
                     var hash = md5.ComputeHash(stream);
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
@@ -214,9 +221,33 @@ namespace HollowKnight.SpritePacker
 
         private bool FrameMD5HashEquals(Frame a, Frame b)
         {
-            return CalculateMD5(a.info.FullName).Equals(CalculateMD5(b.info.FullName));
+            return CalculateMD5(a).Equals(CalculateMD5(b));
         }
 
+        private bool FramePixelEquals(Frame a, Frame b)
+        {
+            using (Bitmap bitmapA = Cut(a))
+            {
+                using (Bitmap bitmapB = Cut(b))
+                {
+                    bool equal = true;
+                    for (int i = 0; i < bitmapA.Width; i++)
+                    {
+                        for (int j = 0; j < bitmapA.Height; j++)
+                        {
+                            if (i < bitmapB.Width && j < bitmapB.Height)
+                            {
+                                if (bitmapA.GetPixel(i, j) != bitmapB.GetPixel(i, j))
+                                {
+                                    equal = false;
+                                }
+                            }
+                        }
+                    }
+                    return equal;
+                }
+            }
+        }
         #endregion Functions
 
         #region Graphics
@@ -231,9 +262,12 @@ namespace HollowKnight.SpritePacker
                     {
                         if (frameneeded.info.Name == _frame)
                         {
+
+
+                            Bitmap cutted = Cut(frameneeded);
                             foreach (var frame in collection.frames)
                             {
-                                if (frame.sprite.id == frameneeded.sprite.id && frame.info.FullName != frameneeded.info.FullName && !(CalculateMD5(frame.info.FullName).Equals(CalculateMD5(frameneeded.info.FullName))))
+                                if (frame.sprite.id == frameneeded.sprite.id && frame.info.FullName != frameneeded.info.FullName)
                                 {
                                     string orig = frameneeded.info.FullName;
                                     string dst = frame.info.FullName;
@@ -244,12 +278,28 @@ namespace HollowKnight.SpritePacker
                                     }
                                     File.Copy(dst, bak);
                                     Log("[Backup] " + dst + "=>" + bak);
-                                    if (File.Exists(dst))
+
+
+
+                                    if (fixedmode && !FramePixelEquals(frame,frameneeded))
                                     {
-                                        File.Delete(dst);
+                                        Bitmap fix = Fix(cutted, frame);
+                                        if (File.Exists(dst))
+                                        {
+                                            File.Delete(dst);
+                                        }
+                                        fix.Save(dst);
                                     }
-                                    File.Copy(orig, dst);
+                                    if (!fixedmode && !FrameMD5HashEquals(frame,frameneeded))
+                                    {
+                                        if (File.Exists(dst))
+                                        {
+                                            File.Delete(dst);
+                                        }
+                                        File.Copy(orig, dst);
+                                    }
                                     Log("[Replace] " + orig + "=>" + dst);
+
                                 }
                             }
                         }
@@ -272,9 +322,10 @@ namespace HollowKnight.SpritePacker
                 {
                     for (int j = 0; j < image.Height; j++)
                     {
-                        int x = frame.sprite.flipped ? frame.sprite.x + j : frame.sprite.x + i;
-                        int y = frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 : genatlas.Height - (frame.sprite.y + j) - 1;
-                        if (x >= 0 && y >= 0)
+                        int x = (frame.sprite.flipped ? frame.sprite.x + j - (fixedmode ? frame.sprite.yr : 0) : frame.sprite.x + i - (fixedmode ? frame.sprite.xr : 0));
+                        int y = (frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 + (fixedmode ? frame.sprite.xr : 0) : genatlas.Height - (frame.sprite.y + j) - 1 + (fixedmode ? frame.sprite.yr : 0));
+                        if (!fixedmode && (0 <= x && x < genatlas.Width && 0 <= y && y < genatlas.Height) ||
+                            fixedmode && (frame.sprite.xr <= i && i < frame.sprite.xr + frame.sprite.width && frame.sprite.yr <= j && j < frame.sprite.yr + frame.sprite.height))
                         {
                             genatlas.SetPixel(x, y, image.GetPixel(i, image.Height - j - 1));
                         }
@@ -293,13 +344,46 @@ namespace HollowKnight.SpritePacker
             Log("Pack Done");
             Log(savepath);
         }
+        private Bitmap Cut(Frame frame)
+        {
+            using (Bitmap bitmap = new Bitmap(frame.info.FullName))
+            {
+                return bitmap.Clone(new Rectangle(frame.sprite.xr, bitmap.Height - frame.sprite.yr - frame.sprite.height, frame.sprite.width, frame.sprite.height), bitmap.PixelFormat);
+            }
 
+
+        }
+        private Bitmap Fix(Bitmap cut, Frame frame)
+        {
+            using (Bitmap temp = new Bitmap(frame.info.FullName))
+            {
+                Bitmap fix = new Bitmap(temp);
+                for (int i = 0; i < cut.Width; i++)
+                {
+                    for (int j = 0; j < cut.Height; j++)
+                    {
+                        fix.SetPixel(i + frame.sprite.xr, fix.Height - (j + frame.sprite.yr) - 1, cut.GetPixel(i, cut.Height - j - 1));
+                    }
+                }
+                return fix;
+            }
+        }
         #endregion Graphics
 
         public Form1()
         {
             InitializeComponent();
             RefreshForm();
+            if (listBox1.Items.Count > 0)
+            {
+                _anim = listBox1.Items[0].ToString();
+                RefreshForm();
+                if (listBox2.Items.Count > 0)
+                {
+                    _clip = listBox2.Items[0].ToString();
+                    RefreshForm();
+                }
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -308,7 +392,7 @@ namespace HollowKnight.SpritePacker
 
         private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!refreshing)
+            if (!refreshing && listBox1.SelectedItem != null)
             {
                 _anim = listBox1.SelectedItem.ToString();
                 RefreshForm();
@@ -321,7 +405,7 @@ namespace HollowKnight.SpritePacker
 
         private void ListBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!refreshing)
+            if (!refreshing && listBox2.SelectedItem != null)
             {
                 _clip = listBox2.SelectedItem.ToString();
                 RefreshForm();
@@ -337,7 +421,7 @@ namespace HollowKnight.SpritePacker
 
         private void ListBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!refreshing)
+            if (!refreshing && listBox3.SelectedItem != null)
             {
                 _frame = listBox3.SelectedItem.ToString();
                 ShowFrame();
@@ -359,7 +443,7 @@ namespace HollowKnight.SpritePacker
 
         private void ListBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!refreshing)
+            if (!refreshing && listBox4.SelectedItem != null)
             {
                 _oriatlas = listBox4.SelectedItem.ToString();
                 RefreshForm();
@@ -377,7 +461,7 @@ namespace HollowKnight.SpritePacker
 
         private void ListBox5_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!refreshing)
+            if (!refreshing && listBox5.SelectedItem != null)
             {
                 _genatlas = listBox5.SelectedItem.ToString();
                 RefreshForm();
@@ -406,7 +490,19 @@ namespace HollowKnight.SpritePacker
             GlobalData.SystemLanguage = comboBox1.SelectedItem.ToString();
             RefreshForm();
         }
-
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            goodtopack = false;
+            check = false;
+            if (comboBox2.SelectedIndex == 0)
+            {
+                fixedmode = false;
+            }
+            else if (comboBox2.SelectedIndex == 1)
+            {
+                fixedmode = true;
+            }
+        }
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (_im == InspectMode.Animation && listBox3.Items.Count > 0)
@@ -436,12 +532,16 @@ namespace HollowKnight.SpritePacker
                         collection.SortFrame();
                         for (int i = 0; i < collection.frames.Count - 1; i++)
                         {
-                            if ((collection.frames[i].sprite.id == collection.frames[i + 1].sprite.id) && !FrameMD5HashEquals(collection.frames[i], collection.frames[i + 1]))
+                            if ((collection.frames[i].sprite.id == collection.frames[i + 1].sprite.id))
                             {
-                                goodtopack = false;
-                                Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
-                                Log("[" + collection.frames[i].info.FullName + "] <-> [" + collection.frames[i + 1].info.FullName + "]");
-                                return;
+                                if (!fixedmode && !FrameMD5HashEquals(collection.frames[i], collection.frames[i + 1]) || fixedmode && !FramePixelEquals(collection.frames[i], collection.frames[i + 1]))
+                                {
+                                    goodtopack = false;
+                                    Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
+                                    Log("[" + collection.frames[i].info.FullName + "] <-> [" + collection.frames[i + 1].info.FullName + "]");
+                                    return;
+                                }
+
                             }
                         }
                     }
@@ -476,7 +576,7 @@ namespace HollowKnight.SpritePacker
             }
         }
 
- 
+
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -489,5 +589,7 @@ namespace HollowKnight.SpritePacker
             linkLabel2.LinkVisited = true;
             System.Diagnostics.Process.Start("https://github.com/magegihk/HollowKnight.SpritePacker");
         }
+
+
     }
 }

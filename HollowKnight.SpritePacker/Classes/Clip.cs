@@ -21,7 +21,7 @@ namespace HollowKnight.SpritePacker
             List<Frame> frames = new List<Frame>();
             foreach (var frame in _info.GetFiles())
             {
-                if (frame.Name.Contains("-") && !frame.Name.Contains("position") && !frame.Name.Contains("backup"))
+                if (frame.Name.Contains("-") && frame.Name.Length == 14 && !frame.Name.Contains("position") && !frame.Name.Contains("backup"))
                     frames.Add(new Frame(frame, _spriteInfo));
             }
             return frames;
