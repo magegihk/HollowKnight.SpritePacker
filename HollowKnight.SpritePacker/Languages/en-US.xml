@@ -4,22 +4,24 @@
   <Main_Label1>Animations</Main_Label1>
   <Main_Label2>Clips</Main_Label2>
   <Main_Label3>Frames</Main_Label3>
-  <Main_Label4>Origin-Atlas</Main_Label4>
+  <Main_Label4>Original-Atlas</Main_Label4>
   <Main_Label5>Generated-Atlas</Main_Label5>
   <Main_Label6>Output Message</Main_Label6>
-  <Main_Label7>Inspector</Main_Label7>
-  <Main_Label8>语言</Main_Label8>
-  <Main_Label9>GODump</Main_Label9>
-  <Main_Label10>Join and Draw!</Main_Label10>
+  <Main_Label7>Backups</Main_Label7>
+  <Main_Label8>Inspector</Main_Label8>
+  <Main_Label9>语言</Main_Label9>
+  <Main_Label10>GODump</Main_Label10>
+  <Main_Label11>Join and Draw!</Main_Label11>
   <Main_LinkLabel1>Get single sprites</Main_LinkLabel1>
   <Main_LinkLabel2>About Sprite Packer</Main_LinkLabel2>
   <Main_Button1>Check</Main_Button1>
   <Main_Button2>Replace</Main_Button2>
   <Main_Button3>Pack</Main_Button3>
   <Main_Button4>Refresh</Main_Button4>
+  <Main_CheckBox1>Backup</Main_CheckBox1>
   <Message_Error01>Sprite dirctory doesn't exist.Please check "Get single sprites" below.</Message_Error01>
   <Message_Error02>Repeated sprites below in this collection are modified differently.Try again after replace the rest of them with the one you need.</Message_Error02>
-  <Message_Error03>Press Check to make sure Pack is doable.</Message_Error03>
+  <Message_Error03>Plz choose original atlas before Check.</Message_Error03>
   <Message_Error04>Choose GODump version before Check.</Message_Error04>
   <Message_01>Good to go.</Message_01>
 </en-US>

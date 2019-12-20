@@ -16,6 +16,7 @@ namespace HollowKnight.SpritePacker
         private bool check = false;
         private bool modechosen = false;
         private bool fixedmode = false;
+        private bool backup = true;
         private string _anim = "";
         private string _clip = "";
         private string _frame = "";
@@ -51,13 +52,14 @@ namespace HollowKnight.SpritePacker
             label8.Text = GlobalData.GlobalLanguage.Main_Label8;
             label9.Text = GlobalData.GlobalLanguage.Main_Label9;
             label10.Text = GlobalData.GlobalLanguage.Main_Label10;
+            label11.Text = GlobalData.GlobalLanguage.Main_Label11;
             linkLabel1.Text = GlobalData.GlobalLanguage.Main_LinkLabel1;
             linkLabel2.Text = GlobalData.GlobalLanguage.Main_LinkLabel2;
             button1.Text = GlobalData.GlobalLanguage.Main_Button1;
             button2.Text = GlobalData.GlobalLanguage.Main_Button2;
             button3.Text = GlobalData.GlobalLanguage.Main_Button3;
             button4.Text = GlobalData.GlobalLanguage.Main_Button4;
-
+            checkBox1.Text = GlobalData.GlobalLanguage.Main_CheckBox1;
         }
 
         public void Log(string s)
@@ -205,6 +207,7 @@ namespace HollowKnight.SpritePacker
                     {
                         if (_im == InspectMode.Collection && collection.name == _oriatlas)
                         {
+                            collection.SortFrame();
                             foreach (var frame in collection.frames)
                             {
                                 listBox3.Items.Add(frame.info.Name);
@@ -409,13 +412,17 @@ namespace HollowKnight.SpritePacker
                                 {
                                     string orig = frameneeded.info.FullName;
                                     string dst = frame.info.FullName;
-                                    string bak = frame.info.DirectoryName + "\\" + frame.info.Name.Substring(0, frame.info.Name.Length - 4) + "[backup]" + DateTime.Now.ToString("HHmmss") + ".png";
-                                    if (File.Exists(bak))
+                                    if (backup)
                                     {
-                                        File.Delete(bak);
+                                        string bak = frame.info.DirectoryName + "\\" + frame.info.Name.Substring(0, frame.info.Name.Length - 4) + "[backup]" + DateTime.Now.ToString("HHmmss") + ".png";
+                                        if (File.Exists(bak))
+                                        {
+                                            File.Delete(bak);
+                                        }
+                                        File.Copy(dst, bak);
+                                        Log("[Backup] " + dst + "=>" + bak);
                                     }
-                                    File.Copy(dst, bak);
-                                    Log("[Backup] " + dst + "=>" + bak);
+                                    
 
                                     
                                     if (fixedmode  && !FramePixelEquals(frame, frameneeded))
@@ -461,10 +468,12 @@ namespace HollowKnight.SpritePacker
                 {
                     for (int j = 0; j < image.Height; j++)
                     {
+                        int xold = frame.sprite.flipped ? frame.sprite.x + j : frame.sprite.x + i;
+                        int yold = frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 : genatlas.Height - (frame.sprite.y + j) - 1;
                         int x = (frame.sprite.flipped ? frame.sprite.x + j - (fixedmode ? frame.sprite.yr : 0) : frame.sprite.x + i - (fixedmode ? frame.sprite.xr : 0));
                         int y = (frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 + (fixedmode ? frame.sprite.xr : 0) : genatlas.Height - (frame.sprite.y + j) - 1 + (fixedmode ? frame.sprite.yr : 0));
                         if (!fixedmode && (0 <= x && x < genatlas.Width && 0 <= y && y < genatlas.Height) ||
-                            fixedmode && (frame.sprite.xr <= i && i < frame.sprite.xr + frame.sprite.width && frame.sprite.yr <= j && j < frame.sprite.yr + frame.sprite.height))
+                            fixedmode && (frame.sprite.xr <= i && i < frame.sprite.xr + frame.sprite.width && frame.sprite.yr <= j && j < frame.sprite.yr + frame.sprite.height) && (0 <= xold && xold < genatlas.Width && 0 <= yold && yold < genatlas.Height))
                         {
                             genatlas.SetPixel(x, y, image.GetPixel(i, image.Height - j - 1));
                         }
@@ -603,6 +612,7 @@ namespace HollowKnight.SpritePacker
         {
             goodtopack = false;
             check = false;
+            button1.Visible = true;
             _im = InspectMode.Collection;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
         }
@@ -670,11 +680,17 @@ namespace HollowKnight.SpritePacker
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (_oriatlas == "")
+            {
+                Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
+                return;
+            }
             if (!modechosen)
             {
                 Log("[Error04] " + GlobalData.GlobalLanguage.Message_Error04);
                 return;
             }
+            
             goodtopack = true;
             check = true;
             if ((_im == InspectMode.Collection || _im == InspectMode.CollFrame) && listBox4.SelectedIndex >= 0)
@@ -694,7 +710,7 @@ namespace HollowKnight.SpritePacker
                                     Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
                                     Log("[" + collection.frames[i].info.Name + "]");
                                     Log("[" + collection.frames[i + 1].info.Name + "]");
-                                    listBox3.SelectedItem = listBox3.FindStringExact(collection.frames[i].info.Name);
+                                    listBox3.SelectedIndex = listBox3.FindStringExact(collection.frames[i].info.Name);
                                     listBox3.TopIndex = listBox3.SelectedIndex;
                                     return;
                                 }
@@ -704,6 +720,7 @@ namespace HollowKnight.SpritePacker
                     }
                 }
             }
+            button1.Visible = false;
             Log(GlobalData.GlobalLanguage.Message_01);
         }
 
@@ -727,10 +744,7 @@ namespace HollowKnight.SpritePacker
                     }
                 }
             }
-            else
-            {
-                Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
-            }
+
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -750,6 +764,9 @@ namespace HollowKnight.SpritePacker
             System.Diagnostics.Process.Start("https://github.com/magegihk/HollowKnight.SpritePacker");
         }
 
-        
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            backup = checkBox1.Checked;
+        }
     }
 }

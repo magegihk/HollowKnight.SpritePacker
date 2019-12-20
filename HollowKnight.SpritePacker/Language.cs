@@ -20,12 +20,14 @@ namespace HollowKnight.SpritePacker
         public string Main_Label8 = "";
         public string Main_Label9 = "";
         public string Main_Label10 = "";
+        public string Main_Label11 = "";
         public string Main_LinkLabel1 = "";
         public string Main_LinkLabel2 = "";
         public string Main_Button1 = "";
         public string Main_Button2 = "";
         public string Main_Button3 = "";
         public string Main_Button4 = "";
+        public string Main_CheckBox1 = "";
 
         #endregion Main Form
 
@@ -93,12 +95,14 @@ namespace HollowKnight.SpritePacker
             Main_Label8 = DicLanguage["Main_Label8"];
             Main_Label9 = DicLanguage["Main_Label9"];
             Main_Label10 = DicLanguage["Main_Label10"];
+            Main_Label11 = DicLanguage["Main_Label11"];
             Main_LinkLabel1 = DicLanguage["Main_LinkLabel1"];
             Main_LinkLabel2 = DicLanguage["Main_LinkLabel2"];
             Main_Button1 = DicLanguage["Main_Button1"];
             Main_Button2 = DicLanguage["Main_Button2"];
             Main_Button3 = DicLanguage["Main_Button3"];
             Main_Button4 = DicLanguage["Main_Button4"];
+            Main_CheckBox1 = DicLanguage["Main_CheckBox1"];
 
             Message_Error01 = DicLanguage["Message_Error01"];
             Message_Error02 = DicLanguage["Message_Error02"];
