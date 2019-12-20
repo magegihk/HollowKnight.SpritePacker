@@ -25,6 +25,7 @@ namespace HollowKnight.SpritePacker
         public string Main_Button1 = "";
         public string Main_Button2 = "";
         public string Main_Button3 = "";
+        public string Main_Button4 = "";
         public string Main_ComboBoxItem1 = "";
         public string Main_ComboBoxItem2 = "";
 
@@ -98,6 +99,7 @@ namespace HollowKnight.SpritePacker
             Main_Button1 = DicLanguage["Main_Button1"];
             Main_Button2 = DicLanguage["Main_Button2"];
             Main_Button3 = DicLanguage["Main_Button3"];
+            Main_Button4 = DicLanguage["Main_Button4"];
             Main_ComboBoxItem1 = DicLanguage["Main_ComboBoxItem1"];
             Main_ComboBoxItem2 = DicLanguage["Main_ComboBoxItem2"];
 

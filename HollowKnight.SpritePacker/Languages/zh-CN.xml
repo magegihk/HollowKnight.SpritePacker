@@ -16,6 +16,7 @@
   <Main_Button1>检查</Main_Button1>
   <Main_Button2>替换</Main_Button2>
   <Main_Button3>打包</Main_Button3>
+  <Main_Button4>刷新</Main_Button4>
   <Main_ComboBoxItem1>未修</Main_ComboBoxItem1>
   <Main_ComboBoxItem2>已修</Main_ComboBoxItem2>
   <Message_Error01>精灵图目录不存在，请查看下方“如何导出精灵图”。</Message_Error01>

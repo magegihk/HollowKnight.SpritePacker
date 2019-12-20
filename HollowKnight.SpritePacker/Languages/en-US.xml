@@ -16,6 +16,7 @@
   <Main_Button1>Check</Main_Button1>
   <Main_Button2>Replace</Main_Button2>
   <Main_Button3>Pack</Main_Button3>
+  <Main_Button4>Refresh</Main_Button4>
   <Main_ComboBoxItem1>UnFixed</Main_ComboBoxItem1>
   <Main_ComboBoxItem2>Fixed</Main_ComboBoxItem2>
   <Message_Error01>Sprite dirctory doesn't exist.Please check "Get single sprites" below.</Message_Error01>

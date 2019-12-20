@@ -55,6 +55,7 @@ namespace HollowKnight.SpritePacker
             button1.Text = GlobalData.GlobalLanguage.Main_Button1;
             button2.Text = GlobalData.GlobalLanguage.Main_Button2;
             button3.Text = GlobalData.GlobalLanguage.Main_Button3;
+            button4.Text = GlobalData.GlobalLanguage.Main_Button4;
             comboBox2.Items.Add(GlobalData.GlobalLanguage.Main_ComboBoxItem1);
             comboBox2.Items.Add(GlobalData.GlobalLanguage.Main_ComboBoxItem2);
 
@@ -63,6 +64,7 @@ namespace HollowKnight.SpritePacker
         public void Log(string s)
         {
             listBox6.Items.Add(s);
+            listBox6.TopIndex = listBox6.Items.Count - 3;
         }
 
         private bool CheckSavePath()
@@ -134,7 +136,146 @@ namespace HollowKnight.SpritePacker
                 pictureBox1.Image = Image.FromFile(Cpath);
             }
         }
+        private void RefreshList1()
+        {
+            refreshing = true;
+            listBox1.Items.Clear();
+            if (CheckSavePath())
+            {
+                foreach (var anim in spritesFolder.animations)
+                {
+                    listBox1.Items.Add(anim.info.Name);
+                }
+                listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            refreshing = false;
+        }
+        private void RefreshList2()
+        {
+            refreshing = true;
+            listBox2.Items.Clear();
+            if (CheckSavePath())
+            {
+                foreach (var anim in spritesFolder.animations)
+                {
+                    if (anim.info.Name == _anim)
+                    {
+                        foreach (var clip in anim.clips)
+                        {
+                            listBox2.Items.Add(clip.info.Name);
+                        }
+                    }
+                }
+                listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            refreshing = false;
+        }
+        private void RefreshList3()
+        {
+            refreshing = true;
+            listBox3.Items.Clear();
+            if (CheckSavePath())
+            {
+                foreach (var anim in spritesFolder.animations)
+                {
+                    if (anim.info.Name == _anim)
+                    {
+                        foreach (var clip in anim.clips)
+                        {
+                            if (clip.info.Name == _clip && _im != InspectMode.Collection && _im != InspectMode.CollFrame)
+                            {
+                                foreach (var frame in clip.frames)
+                                {
+                                    listBox3.Items.Add(frame.info.Name);
+                                }
+                            }
+                        }
+                    }
+                }
+                foreach (var collection in Collection.collections)
+                {
+                    if (collection.info.FullName.Contains(_anim))
+                    {
+                        if (_im == InspectMode.Collection && collection.name == _oriatlas)
+                        {
+                            foreach (var frame in collection.frames)
+                            {
+                                listBox3.Items.Add(frame.info.Name);
+                            }
+                        }
+                    }
+                }
+                listBox3.SelectedIndex = listBox3.FindStringExact(_frame);
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            refreshing = false;
+        }
+        private void RefreshList4()
+        {
+            refreshing = true;
+            listBox4.Items.Clear();
+            if (CheckSavePath())
+            {
+                foreach (var collection in Collection.collections)
+                {
+                    if (collection.info.FullName.Contains(_anim))
+                    {
+                        listBox4.Items.Add(collection.name);
+                    }
+                }
+                listBox4.SelectedIndex = listBox4.FindStringExact(_oriatlas);
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            refreshing = false;
+        }
+        private void RefreshList5()
+        {
+            refreshing = true;
+            listBox5.Items.Clear();
+            if (CheckSavePath())
+            {
+                foreach (var collection in Collection.gencollections)
+                {
+                    if (collection.info.FullName.Contains(_anim))
+                        listBox5.Items.Add(collection.name);
+                }
+                listBox5.SelectedIndex = listBox5.FindStringExact(_genatlas);
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            refreshing = false;
+        }
+        private void RefreshList6()
+        {
+            refreshing = true;
+            listBox6.Items.Clear();
+            if (CheckSavePath())
+            {
+                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
 
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            refreshing = false;
+        }
         private void RefreshForm()
         {
             refreshing = true;
@@ -158,6 +299,7 @@ namespace HollowKnight.SpritePacker
                 foreach (var anim in spritesFolder.animations)
                 {
                     listBox1.Items.Add(anim.info.Name);
+
                     if (anim.info.Name == _anim)
                     {
                         foreach (var clip in anim.clips)
@@ -193,7 +335,6 @@ namespace HollowKnight.SpritePacker
                     if (collection.info.FullName.Contains(_anim))
                         listBox5.Items.Add(collection.name);
                 }
-
                 listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
                 listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
                 listBox3.SelectedIndex = listBox3.FindStringExact(_frame);
@@ -377,11 +518,12 @@ namespace HollowKnight.SpritePacker
             if (listBox1.Items.Count > 0)
             {
                 _anim = listBox1.Items[0].ToString();
-                RefreshForm();
+                RefreshList1();
+                RefreshList2();
                 if (listBox2.Items.Count > 0)
                 {
                     _clip = listBox2.Items[0].ToString();
-                    RefreshForm();
+                    RefreshList3();
                 }
             }
         }
@@ -395,7 +537,12 @@ namespace HollowKnight.SpritePacker
             if (!refreshing && listBox1.SelectedItem != null)
             {
                 _anim = listBox1.SelectedItem.ToString();
-                RefreshForm();
+                RefreshList1();
+                RefreshList2();
+                RefreshList3();
+                RefreshList4();
+                RefreshList5();
+                RefreshList6();
             }
         }
 
@@ -408,7 +555,9 @@ namespace HollowKnight.SpritePacker
             if (!refreshing && listBox2.SelectedItem != null)
             {
                 _clip = listBox2.SelectedItem.ToString();
-                RefreshForm();
+                RefreshList2();
+                RefreshList3();
+                
             }
         }
 
@@ -446,7 +595,8 @@ namespace HollowKnight.SpritePacker
             if (!refreshing && listBox4.SelectedItem != null)
             {
                 _oriatlas = listBox4.SelectedItem.ToString();
-                RefreshForm();
+                RefreshList4();
+                RefreshList3();
                 ShowCollection();
             }
         }
@@ -464,7 +614,7 @@ namespace HollowKnight.SpritePacker
             if (!refreshing && listBox5.SelectedItem != null)
             {
                 _genatlas = listBox5.SelectedItem.ToString();
-                RefreshForm();
+                RefreshList5();
                 ShowGenCollection();
             }
         }
@@ -538,7 +688,10 @@ namespace HollowKnight.SpritePacker
                                 {
                                     goodtopack = false;
                                     Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
-                                    Log("[" + collection.frames[i].info.FullName + "] <-> [" + collection.frames[i + 1].info.FullName + "]");
+                                    Log("[" + collection.frames[i].info.Name + "]");
+                                    Log("[" + collection.frames[i + 1].info.Name + "]");
+                                    listBox3.SelectedItem = listBox3.FindStringExact(collection.frames[i].info.Name);
+                                    listBox3.TopIndex = listBox3.SelectedIndex;
                                     return;
                                 }
 
@@ -576,7 +729,10 @@ namespace HollowKnight.SpritePacker
             }
         }
 
-
+        private void button4_Click(object sender, EventArgs e)
+        {
+            RefreshForm();
+        }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -590,6 +746,6 @@ namespace HollowKnight.SpritePacker
             System.Diagnostics.Process.Start("https://github.com/magegihk/HollowKnight.SpritePacker");
         }
 
-
+        
     }
 }
