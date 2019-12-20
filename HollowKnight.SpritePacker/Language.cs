@@ -26,8 +26,6 @@ namespace HollowKnight.SpritePacker
         public string Main_Button2 = "";
         public string Main_Button3 = "";
         public string Main_Button4 = "";
-        public string Main_ComboBoxItem1 = "";
-        public string Main_ComboBoxItem2 = "";
 
         #endregion Main Form
 
@@ -36,6 +34,7 @@ namespace HollowKnight.SpritePacker
         public string Message_Error01 = "";
         public string Message_Error02 = "";
         public string Message_Error03 = "";
+        public string Message_Error04 = "";
         public string Message_01 = "";
 
         #endregion Message
@@ -100,12 +99,11 @@ namespace HollowKnight.SpritePacker
             Main_Button2 = DicLanguage["Main_Button2"];
             Main_Button3 = DicLanguage["Main_Button3"];
             Main_Button4 = DicLanguage["Main_Button4"];
-            Main_ComboBoxItem1 = DicLanguage["Main_ComboBoxItem1"];
-            Main_ComboBoxItem2 = DicLanguage["Main_ComboBoxItem2"];
 
             Message_Error01 = DicLanguage["Message_Error01"];
             Message_Error02 = DicLanguage["Message_Error02"];
             Message_Error03 = DicLanguage["Message_Error03"];
+            Message_Error04 = DicLanguage["Message_Error04"];
             Message_01 = DicLanguage["Message_01"];
         }
     }

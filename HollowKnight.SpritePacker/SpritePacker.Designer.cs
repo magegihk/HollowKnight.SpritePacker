@@ -149,6 +149,9 @@
             // 
             this.comboBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "v1.2",
+            "v1.3"});
             this.comboBox2.Location = new System.Drawing.Point(560, 492);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(54, 20);

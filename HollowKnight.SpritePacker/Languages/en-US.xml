@@ -9,7 +9,7 @@
   <Main_Label6>Output Message</Main_Label6>
   <Main_Label7>Inspector</Main_Label7>
   <Main_Label8>语言</Main_Label8>
-  <Main_Label9>Mode</Main_Label9>
+  <Main_Label9>GODump</Main_Label9>
   <Main_Label10>Join and Draw!</Main_Label10>
   <Main_LinkLabel1>Get single sprites</Main_LinkLabel1>
   <Main_LinkLabel2>About Sprite Packer</Main_LinkLabel2>
@@ -17,10 +17,9 @@
   <Main_Button2>Replace</Main_Button2>
   <Main_Button3>Pack</Main_Button3>
   <Main_Button4>Refresh</Main_Button4>
-  <Main_ComboBoxItem1>UnFixed</Main_ComboBoxItem1>
-  <Main_ComboBoxItem2>Fixed</Main_ComboBoxItem2>
   <Message_Error01>Sprite dirctory doesn't exist.Please check "Get single sprites" below.</Message_Error01>
   <Message_Error02>Repeated sprites below in this collection are modified differently.Try again after replace the rest of them with the one you need.</Message_Error02>
   <Message_Error03>Press Check to make sure Pack is doable.</Message_Error03>
+  <Message_Error04>Choose GODump version before Check.</Message_Error04>
   <Message_01>Good to go.</Message_01>
 </en-US>

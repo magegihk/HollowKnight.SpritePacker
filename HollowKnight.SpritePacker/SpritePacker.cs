@@ -14,6 +14,7 @@ namespace HollowKnight.SpritePacker
         private bool refreshing;
         private bool goodtopack = false;
         private bool check = false;
+        private bool modechosen = false;
         private bool fixedmode = false;
         private string _anim = "";
         private string _clip = "";
@@ -56,8 +57,6 @@ namespace HollowKnight.SpritePacker
             button2.Text = GlobalData.GlobalLanguage.Main_Button2;
             button3.Text = GlobalData.GlobalLanguage.Main_Button3;
             button4.Text = GlobalData.GlobalLanguage.Main_Button4;
-            comboBox2.Items.Add(GlobalData.GlobalLanguage.Main_ComboBoxItem1);
-            comboBox2.Items.Add(GlobalData.GlobalLanguage.Main_ComboBoxItem2);
 
         }
 
@@ -285,8 +284,6 @@ namespace HollowKnight.SpritePacker
             listBox4.Items.Clear();
             listBox5.Items.Clear();
             listBox6.Items.Clear();
-            comboBox2.Items.Clear();
-            comboBox2.SelectedIndex = comboBox2.SelectedIndex;
             Collection.collections.Clear();
             Collection.gencollections.Clear();
 
@@ -420,9 +417,8 @@ namespace HollowKnight.SpritePacker
                                     File.Copy(dst, bak);
                                     Log("[Backup] " + dst + "=>" + bak);
 
-
-
-                                    if (fixedmode && !FramePixelEquals(frame,frameneeded))
+                                    
+                                    if (fixedmode  && !FramePixelEquals(frame, frameneeded))
                                     {
                                         Bitmap fix = Fix(cutted, frame);
                                         if (File.Exists(dst))
@@ -431,7 +427,7 @@ namespace HollowKnight.SpritePacker
                                         }
                                         fix.Save(dst);
                                     }
-                                    if (!fixedmode && !FrameMD5HashEquals(frame,frameneeded))
+                                    if (!fixedmode && !FrameMD5HashEquals(frame, frameneeded))
                                     {
                                         if (File.Exists(dst))
                                         {
@@ -440,6 +436,8 @@ namespace HollowKnight.SpritePacker
                                         File.Copy(orig, dst);
                                     }
                                     Log("[Replace] " + orig + "=>" + dst);
+                                    
+                                    
 
                                 }
                             }
@@ -644,6 +642,7 @@ namespace HollowKnight.SpritePacker
         {
             goodtopack = false;
             check = false;
+            modechosen = true;
             if (comboBox2.SelectedIndex == 0)
             {
                 fixedmode = false;
@@ -671,6 +670,11 @@ namespace HollowKnight.SpritePacker
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (!modechosen)
+            {
+                Log("[Error04] " + GlobalData.GlobalLanguage.Message_Error04);
+                return;
+            }
             goodtopack = true;
             check = true;
             if ((_im == InspectMode.Collection || _im == InspectMode.CollFrame) && listBox4.SelectedIndex >= 0)
