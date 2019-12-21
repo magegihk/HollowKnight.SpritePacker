@@ -34,8 +34,45 @@ namespace HollowKnight.SpritePacker
         }
 
         private SpritesFolder spritesFolder;
+        private FileSystemWatcher watcher;
+
+        public bool replaceall = false;
+
 
         #endregion Fields
+
+        #region Event listeners
+
+        private FileSystemWatcher WatcherStart(string path, string filter)
+        {
+
+            FileSystemWatcher watcher = new FileSystemWatcher();
+            watcher.Path = path;
+            watcher.Filter = filter;
+            watcher.Changed += new FileSystemEventHandler(OnProcess);
+            watcher.EnableRaisingEvents = true;
+            watcher.NotifyFilter = NotifyFilters.CreationTime;
+            watcher.IncludeSubdirectories = true;
+            return watcher;
+        }
+
+        private void OnProcess(object source, FileSystemEventArgs e)
+        {
+            string changed = e.Name.Split('\\')[2];
+            if (listBox8.FindStringExact(changed) == ListBox.NoMatches)
+            {
+                listBox8.Invoke(new MethodInvoker(delegate () { listBox8.Items.Add(changed); }));
+                this.replaceall = false;
+
+            }
+
+        }
+
+
+
+
+
+        #endregion
 
         #region Functions
 
@@ -53,12 +90,17 @@ namespace HollowKnight.SpritePacker
             label9.Text = GlobalData.GlobalLanguage.Main_Label9;
             label10.Text = GlobalData.GlobalLanguage.Main_Label10;
             label11.Text = GlobalData.GlobalLanguage.Main_Label11;
+            label12.Text = GlobalData.GlobalLanguage.Main_Label12;
             linkLabel1.Text = GlobalData.GlobalLanguage.Main_LinkLabel1;
             linkLabel2.Text = GlobalData.GlobalLanguage.Main_LinkLabel2;
             button1.Text = GlobalData.GlobalLanguage.Main_Button1;
             button2.Text = GlobalData.GlobalLanguage.Main_Button2;
             button3.Text = GlobalData.GlobalLanguage.Main_Button3;
             button4.Text = GlobalData.GlobalLanguage.Main_Button4;
+            button5.Text = GlobalData.GlobalLanguage.Main_Button5;
+            button6.Text = GlobalData.GlobalLanguage.Main_Button6;
+            button7.Text = GlobalData.GlobalLanguage.Main_Button7;
+            button8.Text = GlobalData.GlobalLanguage.Main_Button8;
             checkBox1.Text = GlobalData.GlobalLanguage.Main_CheckBox1;
         }
 
@@ -403,8 +445,6 @@ namespace HollowKnight.SpritePacker
                     {
                         if (frameneeded.info.Name == _frame)
                         {
-
-
                             Bitmap cutted = Cut(frameneeded);
                             foreach (var frame in collection.frames)
                             {
@@ -422,10 +462,7 @@ namespace HollowKnight.SpritePacker
                                         File.Copy(dst, bak);
                                         Log("[Backup] " + dst + "=>" + bak);
                                     }
-                                    
-
-                                    
-                                    if (fixedmode  && !FramePixelEquals(frame, frameneeded))
+                                    if (fixedmode && !FramePixelEquals(frame, frameneeded))
                                     {
                                         Bitmap fix = Fix(cutted, frame);
                                         if (File.Exists(dst))
@@ -443,13 +480,67 @@ namespace HollowKnight.SpritePacker
                                         File.Copy(orig, dst);
                                     }
                                     Log("[Replace] " + orig + "=>" + dst);
-                                    
-                                    
-
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+
+        private void ReplaceAll()
+        {
+            foreach (var collection in Collection.collections)
+            {
+                if (collection.name == _oriatlas)
+                {
+                    foreach (var item in listBox8.Items)
+                    {
+                        foreach (var frameneeded in collection.frames)
+                        {
+                            if (frameneeded.info.Name == item.ToString())
+                            {
+                                Bitmap cutted = Cut(frameneeded);
+                                foreach (var frame in collection.frames)
+                                {
+                                    if (frame.sprite.id == frameneeded.sprite.id && frame.info.FullName != frameneeded.info.FullName)
+                                    {
+                                        string orig = frameneeded.info.FullName;
+                                        string dst = frame.info.FullName;
+                                        if (backup)
+                                        {
+                                            string bak = frame.info.DirectoryName + "\\" + frame.info.Name.Substring(0, frame.info.Name.Length - 4) + "[backup]" + DateTime.Now.ToString("HHmmss") + ".png";
+                                            if (File.Exists(bak))
+                                            {
+                                                File.Delete(bak);
+                                            }
+                                            File.Copy(dst, bak);
+                                            Log("[Backup] " + dst + "=>" + bak);
+                                        }
+                                        if (fixedmode && !FramePixelEquals(frame, frameneeded))
+                                        {
+                                            Bitmap fix = Fix(cutted, frame);
+                                            if (File.Exists(dst))
+                                            {
+                                                File.Delete(dst);
+                                            }
+                                            fix.Save(dst);
+                                        }
+                                        if (!fixedmode && !FrameMD5HashEquals(frame, frameneeded))
+                                        {
+                                            if (File.Exists(dst))
+                                            {
+                                                File.Delete(dst);
+                                            }
+                                            File.Copy(orig, dst);
+                                        }
+                                        Log("[Replace] " + orig + "=>" + dst);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                 }
             }
         }
@@ -564,7 +655,7 @@ namespace HollowKnight.SpritePacker
                 _clip = listBox2.SelectedItem.ToString();
                 RefreshList2();
                 RefreshList3();
-                
+
             }
         }
 
@@ -577,8 +668,17 @@ namespace HollowKnight.SpritePacker
 
         private void ListBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
+            
             if (!refreshing && listBox3.SelectedItem != null)
             {
+                refreshing = true;
+                int index = listBox8.FindStringExact(listBox3.SelectedItem.ToString());
+                if (index != ListBox.NoMatches)
+                {
+                    listBox8.SelectedIndex = index;
+                }
+                refreshing = false;
+
                 _frame = listBox3.SelectedItem.ToString();
                 ShowFrame();
             }
@@ -612,6 +712,7 @@ namespace HollowKnight.SpritePacker
         {
             goodtopack = false;
             check = false;
+            replaceall = false;
             button1.Visible = true;
             _im = InspectMode.Collection;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
@@ -640,7 +741,12 @@ namespace HollowKnight.SpritePacker
         private void ListBox6_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             int index = this.listBox6.IndexFromPoint(e.Location);
-            listBox6.Items.RemoveAt(index);
+            if (index >= 0)
+            {
+                refreshing = true;
+                listBox6.Items.RemoveAt(index);
+                refreshing = false;
+            }
         }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -652,6 +758,7 @@ namespace HollowKnight.SpritePacker
         {
             goodtopack = false;
             check = false;
+            replaceall = false;
             modechosen = true;
             if (comboBox2.SelectedIndex == 0)
             {
@@ -680,26 +787,43 @@ namespace HollowKnight.SpritePacker
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (_oriatlas == "")
-            {
-                Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
-                return;
-            }
             if (!modechosen)
             {
                 Log("[Error04] " + GlobalData.GlobalLanguage.Message_Error04);
                 return;
             }
-            
-            goodtopack = true;
-            check = true;
-            if ((_im == InspectMode.Collection || _im == InspectMode.CollFrame) && listBox4.SelectedIndex >= 0)
+            if ((_im == InspectMode.Collection || _im == InspectMode.CollFrame) && listBox4.SelectedIndex >= 0 && _oriatlas != "")
             {
+                goodtopack = true;
+                check = true;
+                replaceall = true;
                 foreach (var collection in Collection.collections)
                 {
                     if (collection.name == _oriatlas)
                     {
                         collection.SortFrame();
+                        Log("[Error05] " + GlobalData.GlobalLanguage.Message_Error05);
+                        foreach (var item in listBox8.Items)
+                        {
+                            bool findone = false;
+                            foreach (var frame in collection.frames)
+                            {
+                                if (item.ToString() == frame.info.Name)
+                                {
+                                    findone = true;
+                                }
+                            }
+                            if (!findone)
+                            {
+                                Log("[" + item.ToString() + "]");
+                                replaceall = false;
+
+                            }
+                        }
+                        if (replaceall)
+                        {
+                            listBox6.Items.RemoveAt(listBox6.Items.Count - 1);
+                        }
                         for (int i = 0; i < collection.frames.Count - 1; i++)
                         {
                             if ((collection.frames[i].sprite.id == collection.frames[i + 1].sprite.id))
@@ -717,8 +841,14 @@ namespace HollowKnight.SpritePacker
 
                             }
                         }
+
                     }
                 }
+            }
+            else
+            {
+                Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
+                return;
             }
             button1.Visible = false;
             Log(GlobalData.GlobalLanguage.Message_01);
@@ -767,6 +897,68 @@ namespace HollowKnight.SpritePacker
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             backup = checkBox1.Checked;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            watcher = WatcherStart(folderpath, "???-??-???.png");
+            button6.Visible = false;
+            Log("Watcher On.");
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            watcher.Dispose();
+            button6.Visible = true;
+            Log("Watcher Off.");
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (!goodtopack && replaceall)
+            {
+                ReplaceAll();
+            }
+        }
+
+        private void listBox8_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            if (!refreshing && listBox3.SelectedItem != null)
+            {
+                refreshing = true;
+                int index = listBox3.FindStringExact(listBox8.SelectedItem.ToString());
+                if (index != ListBox.NoMatches)
+                {
+                    listBox3.SelectedIndex = index;
+                }
+                refreshing = false;
+                _frame = listBox3.SelectedItem.ToString();
+                ShowFrame();
+            }
+            listBox3.TopIndex = listBox3.SelectedIndex;
+        }
+        private void listBox8_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = this.listBox8.IndexFromPoint(e.Location);
+            if (index >= 0)
+            {
+                refreshing = true;
+                listBox8.Items.RemoveAt(index);
+                refreshing = false;
+            }
+        }
+        private void ListBox8_MouseClick(object sender, EventArgs eventArgs)
+        {
+            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+            if (_im == InspectMode.Animation)
+            {
+                _im = InspectMode.AnimFrame;
+            }
+            if (_im == InspectMode.Collection)
+            {
+                _im = InspectMode.CollFrame;
+            }
         }
     }
 }

@@ -7,21 +7,27 @@
   <Main_Label4>原始图集</Main_Label4>
   <Main_Label5>生成图集</Main_Label5>
   <Main_Label6>输出信息</Main_Label6>
-  <Main_Label7>备份</Main_Label7>
-  <Main_Label8>图像</Main_Label8>
-  <Main_Label9>Language</Main_Label9>
-  <Main_Label10>GODump</Main_Label10>
-  <Main_Label11>QQ群：870247464</Main_Label11>
+  <Main_Label7>备份列表</Main_Label7>
+  <Main_Label8>修改列表</Main_Label8>
+  <Main_Label9>图像</Main_Label9>
+  <Main_Label10>Language</Main_Label10>
+  <Main_Label11>GODump</Main_Label11>
+  <Main_Label12>QQ群：870247464</Main_Label12>
   <Main_LinkLabel1>如何导出精灵图</Main_LinkLabel1>
   <Main_LinkLabel2>关于精灵图包装鸡</Main_LinkLabel2>
   <Main_Button1>检查</Main_Button1>
   <Main_Button2>替换</Main_Button2>
   <Main_Button3>打包</Main_Button3>
   <Main_Button4>刷新</Main_Button4>
+  <Main_Button5>还原</Main_Button5>
+  <Main_Button6>监视</Main_Button6>
+  <Main_Button7>不监视</Main_Button7>
+  <Main_Button8>全替换</Main_Button8>
   <Main_CheckBox1>备份</Main_CheckBox1>
   <Message_Error01>精灵图目录不存在，请查看下方“如何导出精灵图”。</Message_Error01>
   <Message_Error02>当前图集存在以下精灵图被重复使用，重复精灵图被修改后不相同，请使之一致后再试。</Message_Error02>
   <Message_Error03>请先选择原始图集，再按检查。</Message_Error03>
   <Message_Error04>请先选择GODump版本。</Message_Error04>
+  <Message_Error05>修改列表中有以下不属于当前图集的文件，请双击删除，否则不能正确“全替换”。（不影响“替换”）</Message_Error05>
   <Message_01>可以打包。</Message_01>
 </zh-CN>
