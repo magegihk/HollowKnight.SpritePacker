@@ -32,6 +32,7 @@ namespace HollowKnight.SpritePacker
         public string Main_Button6 = "";
         public string Main_Button7 = "";
         public string Main_Button8 = "";
+        public string Main_Button9 = "";
         public string Main_CheckBox1 = "";
 
         #endregion Main Form
@@ -113,6 +114,7 @@ namespace HollowKnight.SpritePacker
             Main_Button6 = DicLanguage["Main_Button6"];
             Main_Button7 = DicLanguage["Main_Button7"];
             Main_Button8 = DicLanguage["Main_Button8"];
+            Main_Button9 = DicLanguage["Main_Button9"];
             Main_CheckBox1 = DicLanguage["Main_CheckBox1"];
 
             Message_Error01 = DicLanguage["Message_Error01"];

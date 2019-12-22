@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 
@@ -17,12 +19,186 @@ namespace HollowKnight.SpritePacker
         private bool modechosen = false;
         private bool fixedmode = false;
         private bool backup = true;
-        private string _anim = "";
-        private string _clip = "";
-        private string _frame = "";
-        private string _oriatlas = "";
-        private string _genatlas = "";
+
+        private string _anim;
+        private string _clip;
+        private string _frame;
+        private string _oriatlas;
+        private string _genatlas;
+        private string _msg;
+        private List<string> _backups;
+        private string _changed;
+        private string Anim
+        {
+            get
+            {
+                if (listBox1.SelectedItem != null)
+                {
+                    _anim = listBox1.SelectedItem.ToString();
+                }
+                return _anim;
+            }
+            set
+            {
+                int index = listBox1.FindStringExact(value);
+                if (index != ListBox.NoMatches)
+                {
+                    listBox1.SelectedIndex = index;
+                }
+                _anim = value;
+            }
+        }
+        private string Clip
+        {
+            get
+            {
+                if (listBox2.SelectedItem != null)
+                {
+                    _clip = listBox2.SelectedItem.ToString();
+                }
+                return _clip;
+            }
+            set
+            {
+                int index = listBox2.FindStringExact(value);
+                if (index != ListBox.NoMatches)
+                {
+                    listBox2.SelectedIndex = index;
+                }
+                _clip = value;
+            }
+        }
+        private string Freame
+        {
+            get
+            {
+                if (listBox3.SelectedItem != null)
+                {
+                    _frame = listBox3.SelectedItem.ToString();
+                }
+                return _frame;
+            }
+            set
+            {
+                int index = listBox3.FindStringExact(value);
+                if (index != ListBox.NoMatches)
+                {
+                    listBox3.SelectedIndex = index;
+                }
+                _frame = value;
+            }
+        }
+        private string Oriatlas
+        {
+            get
+            {
+                if (listBox4.SelectedItem != null)
+                {
+                    _oriatlas = listBox4.SelectedItem.ToString();
+                }
+                return _oriatlas;
+            }
+            set
+            {
+                int index = listBox4.FindStringExact(value);
+                if (index != ListBox.NoMatches)
+                {
+                    listBox4.SelectedIndex = index;
+                }
+                _oriatlas = value;
+            }
+        }
+        private string Genatlas
+        {
+            get
+            {
+                if (listBox5.SelectedItem != null)
+                {
+                    _genatlas = listBox5.SelectedItem.ToString();
+                }
+                return _genatlas;
+            }
+            set
+            {
+                int index = listBox5.FindStringExact(value);
+                if (index != ListBox.NoMatches)
+                {
+                    listBox5.SelectedIndex = index;
+                }
+                _genatlas = value;
+            }
+        }
+        private string Msg
+        {
+            get
+            {
+                if (listBox6.SelectedItem != null)
+                {
+                    _msg = listBox6.SelectedItem.ToString();
+                }
+                return _msg;
+            }
+            set
+            {
+                int index = listBox6.FindStringExact(value);
+                if (index != ListBox.NoMatches)
+                {
+                    listBox6.SelectedIndex = index;
+                }
+                _msg = value;
+            }
+        }
+        private List<string> Backups
+        {
+            get
+            {
+                if (listBox7.SelectedItem != null)
+                {
+                    _backups = new List<string>();
+                    foreach (var item in listBox7.SelectedItems)
+                    {
+                        _backups.Add(item.ToString());
+                    }
+                }
+                return _backups;
+            }
+            set
+            {
+                listBox7.SelectedIndices.Clear();
+                foreach (var item in value)
+                {
+                    int index = listBox7.FindStringExact(item);
+                    if (index != ListBox.NoMatches)
+                    {
+                        listBox7.SelectedIndices.Add(index);
+                    }
+                }
+                _backups = value;
+            }
+        }
+        private string Changed
+        {
+            get
+            {
+                if (listBox8.SelectedItem != null)
+                {
+                    _changed = listBox8.SelectedItem.ToString();
+                }
+                return _changed;
+            }
+            set
+            {
+                int index = listBox8.FindStringExact(value);
+                if (index != ListBox.NoMatches)
+                {
+                    listBox8.SelectedIndex = index;
+                }
+                _changed = value;
+            }
+        }
         private int FrameRate = 12;
+        private BackComparer backComparer = new BackComparer();
+
         private InspectMode _im = InspectMode.Animation;
 
         private enum InspectMode
@@ -32,7 +208,12 @@ namespace HollowKnight.SpritePacker
             AnimFrame,
             CollFrame
         }
-
+        private enum ReplaceMode
+        {
+            Single,
+            All,
+            Restore
+        }
         private SpritesFolder spritesFolder;
         private FileSystemWatcher watcher;
 
@@ -101,6 +282,7 @@ namespace HollowKnight.SpritePacker
             button6.Text = GlobalData.GlobalLanguage.Main_Button6;
             button7.Text = GlobalData.GlobalLanguage.Main_Button7;
             button8.Text = GlobalData.GlobalLanguage.Main_Button8;
+            button9.Text = GlobalData.GlobalLanguage.Main_Button9;
             checkBox1.Text = GlobalData.GlobalLanguage.Main_CheckBox1;
         }
 
@@ -115,70 +297,7 @@ namespace HollowKnight.SpritePacker
             return Directory.Exists(folderpath);
         }
 
-        private void ShowFrame()
-        {
-            if (_im == InspectMode.Animation || _im == InspectMode.AnimFrame)
-            {
-                string Fpath = folderpath + "\\" + _anim + "\\" + _clip + "\\" + _frame;
-                if (File.Exists(Fpath))
-                {
-                    if (pictureBox1.Image != null)
-                    {
-                        pictureBox1.Image.Dispose();
-                    }
-                    pictureBox1.Image = Image.FromFile(Fpath);
-                }
-            }
-            if (_im == InspectMode.CollFrame)
-            {
-                Collection collection = Collection.GetCollectionByName(_oriatlas);
-                foreach (var frame in collection.frames)
-                {
-                    if (frame.info.Name == _frame)
-                    {
-                        if (pictureBox1.Image != null)
-                        {
-                            pictureBox1.Image.Dispose();
-                        }
-                        pictureBox1.Image = Image.FromFile(frame.info.FullName);
-                        Log("[FilePath] " + frame.info.FullName.Replace(new DirectoryInfo(folderpath).FullName + "\\", ""));
 
-                        _anim = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[0];
-                        _clip = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[1];
-                        refreshing = true;
-                        listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
-                        listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
-                        refreshing = false;
-                    }
-                }
-            }
-        }
-
-        private void ShowCollection()
-        {
-            string Cpath = folderpath + "\\" + _anim + "\\0.Atlases\\" + _oriatlas + ".png";
-            if (File.Exists(Cpath))
-            {
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                }
-                pictureBox1.Image = Image.FromFile(Cpath);
-            }
-        }
-
-        private void ShowGenCollection()
-        {
-            string Cpath = folderpath + "\\" + _anim + "\\0.Atlases\\" + _genatlas + ".png";
-            if (File.Exists(Cpath))
-            {
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                }
-                pictureBox1.Image = Image.FromFile(Cpath);
-            }
-        }
         private void RefreshList1()
         {
             refreshing = true;
@@ -312,7 +431,29 @@ namespace HollowKnight.SpritePacker
             if (CheckSavePath())
             {
                 Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
-
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            refreshing = false;
+        }
+        private void RefreshList7()
+        {
+            refreshing = true;
+            listBox7.Items.Clear();
+            _backups = new List<string>();
+            if (CheckSavePath())
+            {
+                foreach (var backup in new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories))
+                {
+                    _backups.Add(backup.Name);
+                }
+                _backups.Sort(backComparer);
+                foreach (var item in _backups)
+                {
+                    listBox7.Items.Add(item);
+                }
             }
             else
             {
@@ -329,15 +470,18 @@ namespace HollowKnight.SpritePacker
             listBox4.Items.Clear();
             listBox5.Items.Clear();
             listBox6.Items.Clear();
+            listBox7.Items.Clear();
+            _backups = new List<string>();
+
             Collection.collections.Clear();
             Collection.gencollections.Clear();
 
             SetValues();
             if (CheckSavePath())
             {
-                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
 
                 spritesFolder = new SpritesFolder(new DirectoryInfo(folderpath));
+                //refresh 123
                 foreach (var anim in spritesFolder.animations)
                 {
                     listBox1.Items.Add(anim.info.Name);
@@ -357,6 +501,7 @@ namespace HollowKnight.SpritePacker
                         }
                     }
                 }
+                //refresh 3,4
                 foreach (var collection in Collection.collections)
                 {
                     if (collection.info.FullName.Contains(_anim))
@@ -372,10 +517,23 @@ namespace HollowKnight.SpritePacker
                         }
                     }
                 }
+                //refresh 5
                 foreach (var collection in Collection.gencollections)
                 {
                     if (collection.info.FullName.Contains(_anim))
                         listBox5.Items.Add(collection.name);
+                }
+                //refresh 6
+                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
+                //refresh 7
+                foreach (var backup in new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories))
+                {
+                    _backups.Add(backup.Name);
+                }
+                _backups.Sort(backComparer);
+                foreach (var item in _backups)
+                {
+                    listBox7.Items.Add(item);
                 }
                 listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
                 listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
@@ -390,6 +548,146 @@ namespace HollowKnight.SpritePacker
             refreshing = false;
         }
 
+        private void Check()
+        {
+            goodtopack = true;
+            check = true;
+            replaceall = true;
+            foreach (var collection in Collection.collections)
+            {
+                if (collection.name == _oriatlas)
+                {
+                    collection.SortFrame();
+                    Log("[Error05] " + GlobalData.GlobalLanguage.Message_Error05);
+                    foreach (var item in listBox8.Items)
+                    {
+                        bool findone = false;
+                        foreach (var frame in collection.frames)
+                        {
+                            if (item.ToString() == frame.info.Name)
+                            {
+                                findone = true;
+                            }
+                        }
+                        if (!findone)
+                        {
+                            Log("\t" + item.ToString());
+                            replaceall = false;
+
+                        }
+                    }
+                    if (replaceall)
+                    {
+                        listBox6.Items.RemoveAt(listBox6.Items.Count - 1);
+                    }
+                    for (int i = 0; i < collection.frames.Count - 1; i++)
+                    {
+                        if ((collection.frames[i].sprite.id == collection.frames[i + 1].sprite.id))
+                        {
+                            if (!fixedmode && !FrameMD5HashEquals(collection.frames[i], collection.frames[i + 1]) || fixedmode && !FramePixelEquals(collection.frames[i], collection.frames[i + 1]))
+                            {
+                                goodtopack = false;
+                                Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
+                                Log("\t" + collection.frames[i].info.Name);
+                                Log("\t" + collection.frames[i + 1].info.Name);
+                                listBox3.SelectedIndex = listBox3.FindStringExact(collection.frames[i].info.Name);
+                                listBox3.TopIndex = listBox3.SelectedIndex;
+                                return;
+                            }
+
+                        }
+                    }
+                }
+            }
+            button1.Visible = false;
+            Log("[" + GlobalData.GlobalLanguage.Main_Button1 + "] " + GlobalData.GlobalLanguage.Message_01);
+        }
+        
+
+        private void Replace(ReplaceMode mode)
+        {
+            foreach (var collection in Collection.collections)
+            {
+                if (collection.name == _oriatlas)
+                {
+                    string[] items;
+                    List<Frame> frames;
+                    switch (mode)
+                    {
+                        case ReplaceMode.Single:
+                            items = new string[] { _frame };
+                            frames = collection.frames;
+                            break;
+                        case ReplaceMode.All:
+                            items = listBox8.Items.OfType<string>().ToArray();
+                            frames = collection.frames;
+                            break;
+                        case ReplaceMode.Restore:
+                            items = listBox7.Items.OfType<string>().ToArray();
+                            frames = new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories).Select(f => new Frame(f)).ToList();
+                            break;
+                        default:
+                            items = new string[] { };
+                            frames = collection.frames;
+                            break;
+                    }
+                    foreach (string item in items)
+                    {
+                        foreach (var frameneeded in frames)
+                        {
+                            if (frameneeded.info.Name == item)
+                            {
+                                Bitmap cutted = Cut(frameneeded);
+                                foreach (var frame in collection.frames)
+                                {
+                                    if (frame.sprite.id == frameneeded.sprite?.id && frame.info.FullName != frameneeded.info.FullName || mode == ReplaceMode.Restore && frame.info.Name == frameneeded.info.Name.Remove(10, 14))
+                                    {
+                                        string orig = frameneeded.info.FullName;
+                                        string _orig = frameneeded.info.Name;
+                                        string dst = frame.info.FullName;
+                                        string _dst = frame.info.Name;
+                                        if (backup && mode != ReplaceMode.Restore)
+                                        {
+                                            string bak = frame.info.DirectoryName + "\\" + frame.info.Name.Substring(0, frame.info.Name.Length - 4) + "[backup]" + DateTime.Now.ToString("HHmmss") + ".png";
+                                            string _bak = frame.info.Name.Substring(0, frame.info.Name.Length - 4) + "[backup]" + DateTime.Now.ToString("HHmmss") + ".png";
+                                            if (File.Exists(bak))
+                                            {
+                                                File.Delete(bak);
+                                            }
+                                            File.Copy(dst, bak);
+                                            Log("[" + GlobalData.GlobalLanguage.Main_CheckBox1 + "] " + _dst + " => " + _bak);
+                                        }
+                                        if (fixedmode && !FramePixelEquals(frame, frameneeded) && mode != ReplaceMode.Restore)
+                                        {
+                                            Bitmap fix = Fix(cutted, frame);
+                                            if (File.Exists(dst))
+                                            {
+                                                File.Delete(dst);
+                                            }
+                                            fix.Save(dst);
+                                        }
+                                        if (!fixedmode && !FrameMD5HashEquals(frame, frameneeded) || mode == ReplaceMode .Restore)
+                                        {
+                                            if (File.Exists(dst))
+                                            {
+                                                File.Delete(dst);
+                                            }
+                                            File.Copy(orig, dst);
+                                            if (mode == ReplaceMode.Restore && File.Exists(orig))
+                                            {
+                                                File.Delete(orig);
+                                            }
+                                        }
+                                        Log("[" + GlobalData.GlobalLanguage.Main_Button2 + "] " + _orig + " => " + _dst);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
         private string CalculateMD5(Frame frame)
         {
             using (var md5 = MD5.Create())
@@ -435,113 +733,98 @@ namespace HollowKnight.SpritePacker
 
         #region Graphics
 
-        private void Replace()
+        private void ShowPic(InspectMode mode)
         {
-            foreach (var collection in Collection.collections)
+            string path;
+            switch (mode)
             {
-                if (collection.name == _oriatlas)
+                case InspectMode.Animation:
+                    path = folderpath + "\\" + _anim + "\\" + _clip + "\\" + _frame;
+                    break;
+                case InspectMode.Collection:
+                    path = "";
+                    break;
+                case InspectMode.AnimFrame:
+                    path = folderpath + "\\" + _anim + "\\" + _clip + "\\" + _frame;
+                    break;
+                case InspectMode.CollFrame:
+                    path = "";
+                    break;
+                default:
+                    path = "";
+                    break;
+            }
+            if (File.Exists(path))
+            {
+                if (pictureBox1.Image != null)
                 {
-                    foreach (var frameneeded in collection.frames)
+                    pictureBox1.Image.Dispose();
+                }
+                pictureBox1.Image = Image.FromFile(path);
+            }
+        }
+        private void ShowFrame()
+        {
+            if (_im == InspectMode.Animation || _im == InspectMode.AnimFrame)
+            {
+                string Fpath = folderpath + "\\" + _anim + "\\" + _clip + "\\" + _frame;
+                if (File.Exists(Fpath))
+                {
+                    if (pictureBox1.Image != null)
                     {
-                        if (frameneeded.info.Name == _frame)
+                        pictureBox1.Image.Dispose();
+                    }
+                    pictureBox1.Image = Image.FromFile(Fpath);
+                }
+            }
+            if (_im == InspectMode.CollFrame)
+            {
+                Collection collection = Collection.GetCollectionByName(_oriatlas);
+                foreach (var frame in collection.frames)
+                {
+                    if (frame.info.Name == _frame)
+                    {
+                        if (pictureBox1.Image != null)
                         {
-                            Bitmap cutted = Cut(frameneeded);
-                            foreach (var frame in collection.frames)
-                            {
-                                if (frame.sprite.id == frameneeded.sprite.id && frame.info.FullName != frameneeded.info.FullName)
-                                {
-                                    string orig = frameneeded.info.FullName;
-                                    string dst = frame.info.FullName;
-                                    if (backup)
-                                    {
-                                        string bak = frame.info.DirectoryName + "\\" + frame.info.Name.Substring(0, frame.info.Name.Length - 4) + "[backup]" + DateTime.Now.ToString("HHmmss") + ".png";
-                                        if (File.Exists(bak))
-                                        {
-                                            File.Delete(bak);
-                                        }
-                                        File.Copy(dst, bak);
-                                        Log("[Backup] " + dst + "=>" + bak);
-                                    }
-                                    if (fixedmode && !FramePixelEquals(frame, frameneeded))
-                                    {
-                                        Bitmap fix = Fix(cutted, frame);
-                                        if (File.Exists(dst))
-                                        {
-                                            File.Delete(dst);
-                                        }
-                                        fix.Save(dst);
-                                    }
-                                    if (!fixedmode && !FrameMD5HashEquals(frame, frameneeded))
-                                    {
-                                        if (File.Exists(dst))
-                                        {
-                                            File.Delete(dst);
-                                        }
-                                        File.Copy(orig, dst);
-                                    }
-                                    Log("[Replace] " + orig + "=>" + dst);
-                                }
-                            }
+                            pictureBox1.Image.Dispose();
                         }
+                        pictureBox1.Image = Image.FromFile(frame.info.FullName);
+                        Log("[FilePath] " + frame.info.FullName.Replace(new DirectoryInfo(folderpath).FullName + "\\", ""));
+
+                        _anim = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[0];
+                        _clip = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[1];
+                        refreshing = true;
+                        listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
+                        listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
+                        refreshing = false;
                     }
                 }
             }
         }
 
-        private void ReplaceAll()
+        private void ShowCollection()
         {
-            foreach (var collection in Collection.collections)
+            string Cpath = folderpath + "\\" + _anim + "\\0.Atlases\\" + _oriatlas + ".png";
+            if (File.Exists(Cpath))
             {
-                if (collection.name == _oriatlas)
+                if (pictureBox1.Image != null)
                 {
-                    foreach (var item in listBox8.Items)
-                    {
-                        foreach (var frameneeded in collection.frames)
-                        {
-                            if (frameneeded.info.Name == item.ToString())
-                            {
-                                Bitmap cutted = Cut(frameneeded);
-                                foreach (var frame in collection.frames)
-                                {
-                                    if (frame.sprite.id == frameneeded.sprite.id && frame.info.FullName != frameneeded.info.FullName)
-                                    {
-                                        string orig = frameneeded.info.FullName;
-                                        string dst = frame.info.FullName;
-                                        if (backup)
-                                        {
-                                            string bak = frame.info.DirectoryName + "\\" + frame.info.Name.Substring(0, frame.info.Name.Length - 4) + "[backup]" + DateTime.Now.ToString("HHmmss") + ".png";
-                                            if (File.Exists(bak))
-                                            {
-                                                File.Delete(bak);
-                                            }
-                                            File.Copy(dst, bak);
-                                            Log("[Backup] " + dst + "=>" + bak);
-                                        }
-                                        if (fixedmode && !FramePixelEquals(frame, frameneeded))
-                                        {
-                                            Bitmap fix = Fix(cutted, frame);
-                                            if (File.Exists(dst))
-                                            {
-                                                File.Delete(dst);
-                                            }
-                                            fix.Save(dst);
-                                        }
-                                        if (!fixedmode && !FrameMD5HashEquals(frame, frameneeded))
-                                        {
-                                            if (File.Exists(dst))
-                                            {
-                                                File.Delete(dst);
-                                            }
-                                            File.Copy(orig, dst);
-                                        }
-                                        Log("[Replace] " + orig + "=>" + dst);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
+                    pictureBox1.Image.Dispose();
                 }
+                pictureBox1.Image = Image.FromFile(Cpath);
+            }
+        }
+
+        private void ShowGenCollection()
+        {
+            string Cpath = folderpath + "\\" + _anim + "\\0.Atlases\\" + _genatlas + ".png";
+            if (File.Exists(Cpath))
+            {
+                if (pictureBox1.Image != null)
+                {
+                    pictureBox1.Image.Dispose();
+                }
+                pictureBox1.Image = Image.FromFile(Cpath);
             }
         }
 
@@ -580,11 +863,15 @@ namespace HollowKnight.SpritePacker
             }
             string savepath = collection.info.DirectoryName + "\\Gen-" + collection.info.Name;
             genatlas.Save(savepath);
-            Log("Pack Done");
-            Log(savepath);
+            Log("[" + GlobalData.GlobalLanguage.Main_Button3 + "] " + "Pack Done");
+            Log("[" + GlobalData.GlobalLanguage.Main_Button3 + "] " + savepath);
         }
         private Bitmap Cut(Frame frame)
         {
+            if (frame.sprite == null)
+            {
+                return null;
+            }
             using (Bitmap bitmap = new Bitmap(frame.info.FullName))
             {
                 return bitmap.Clone(new Rectangle(frame.sprite.xr, bitmap.Height - frame.sprite.yr - frame.sprite.height, frame.sprite.width, frame.sprite.height), bitmap.PixelFormat);
@@ -609,6 +896,60 @@ namespace HollowKnight.SpritePacker
         }
         #endregion Graphics
 
+        #region Class
+
+        private class BackComparer : IComparer<string>
+        {
+            private int start;
+            private int len;
+            private SortBy sort;
+            public enum SortBy
+            {
+                clip,
+                id,
+                time
+            }
+            public SortBy Sort
+            {
+                get
+                {
+                    return sort;
+                }
+                set
+                {
+                    switch (value)
+                    {
+                        case SortBy.clip:
+                            start = 0;
+                            len = 3;
+                            sort = SortBy.clip;
+                            break;
+                        case SortBy.id:
+                            start = 7;
+                            len = 3;
+                            sort = SortBy.id;
+                            break;
+                        case SortBy.time:
+                            start = 18;
+                            len = 6;
+                            sort = SortBy.time;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            public BackComparer()
+            {
+                Sort = SortBy.time;
+            }
+            public int Compare(string a, string b)
+            {
+                return a.Substring(start, len).CompareTo(b.Substring(start, len));
+            }
+        }
+
+        #endregion
         public Form1()
         {
             InitializeComponent();
@@ -668,7 +1009,7 @@ namespace HollowKnight.SpritePacker
 
         private void ListBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
             if (!refreshing && listBox3.SelectedItem != null)
             {
                 refreshing = true;
@@ -787,78 +1128,24 @@ namespace HollowKnight.SpritePacker
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (_im == InspectMode.Animation || _im == InspectMode.AnimFrame)
+            {
+                Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
+                return;
+            }
             if (!modechosen)
             {
                 Log("[Error04] " + GlobalData.GlobalLanguage.Message_Error04);
                 return;
             }
-            if ((_im == InspectMode.Collection || _im == InspectMode.CollFrame) && listBox4.SelectedIndex >= 0 && _oriatlas != "")
-            {
-                goodtopack = true;
-                check = true;
-                replaceall = true;
-                foreach (var collection in Collection.collections)
-                {
-                    if (collection.name == _oriatlas)
-                    {
-                        collection.SortFrame();
-                        Log("[Error05] " + GlobalData.GlobalLanguage.Message_Error05);
-                        foreach (var item in listBox8.Items)
-                        {
-                            bool findone = false;
-                            foreach (var frame in collection.frames)
-                            {
-                                if (item.ToString() == frame.info.Name)
-                                {
-                                    findone = true;
-                                }
-                            }
-                            if (!findone)
-                            {
-                                Log("[" + item.ToString() + "]");
-                                replaceall = false;
-
-                            }
-                        }
-                        if (replaceall)
-                        {
-                            listBox6.Items.RemoveAt(listBox6.Items.Count - 1);
-                        }
-                        for (int i = 0; i < collection.frames.Count - 1; i++)
-                        {
-                            if ((collection.frames[i].sprite.id == collection.frames[i + 1].sprite.id))
-                            {
-                                if (!fixedmode && !FrameMD5HashEquals(collection.frames[i], collection.frames[i + 1]) || fixedmode && !FramePixelEquals(collection.frames[i], collection.frames[i + 1]))
-                                {
-                                    goodtopack = false;
-                                    Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
-                                    Log("[" + collection.frames[i].info.Name + "]");
-                                    Log("[" + collection.frames[i + 1].info.Name + "]");
-                                    listBox3.SelectedIndex = listBox3.FindStringExact(collection.frames[i].info.Name);
-                                    listBox3.TopIndex = listBox3.SelectedIndex;
-                                    return;
-                                }
-
-                            }
-                        }
-
-                    }
-                }
-            }
-            else
-            {
-                Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
-                return;
-            }
-            button1.Visible = false;
-            Log(GlobalData.GlobalLanguage.Message_01);
+            Check();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             if (!goodtopack && check)
             {
-                Replace();
+                Replace(ReplaceMode.Single);
             }
         }
 
@@ -903,27 +1190,30 @@ namespace HollowKnight.SpritePacker
         {
             watcher = WatcherStart(folderpath, "???-??-???.png");
             button6.Visible = false;
-            Log("Watcher On.");
+            Log("[" + GlobalData.GlobalLanguage.Main_Button6 + "] " + "Watcher On.");
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
             watcher.Dispose();
             button6.Visible = true;
-            Log("Watcher Off.");
+            Log("[" + GlobalData.GlobalLanguage.Main_Button7 + "] " + "Watcher Off.");
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
             if (!goodtopack && replaceall)
             {
-                ReplaceAll();
+                Replace(ReplaceMode.All);
+                refreshing = true;
+                listBox8.Items.Clear();
+                refreshing = false;
             }
         }
 
         private void listBox8_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
             if (!refreshing && listBox3.SelectedItem != null)
             {
                 refreshing = true;
@@ -959,6 +1249,28 @@ namespace HollowKnight.SpritePacker
             {
                 _im = InspectMode.CollFrame;
             }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            if (backComparer.Sort < BackComparer.SortBy.time)
+            {
+                backComparer.Sort++;
+            }
+            else
+                backComparer.Sort = BackComparer.SortBy.clip;
+            Log("[" + GlobalData.GlobalLanguage.Main_Button9 + "] " + backComparer.Sort.ToString());
+            RefreshList7();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Replace(ReplaceMode.Restore);
+        }
+
+        private void listBox7_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

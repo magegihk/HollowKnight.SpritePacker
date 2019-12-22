@@ -105,13 +105,14 @@
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
             // 
             this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button1.Location = new System.Drawing.Point(652, 515);
+            this.button1.Location = new System.Drawing.Point(652, 520);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(55, 23);
             this.button1.TabIndex = 17;
@@ -232,7 +233,7 @@
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label7.Location = new System.Drawing.Point(809, 9);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(120, 12);
+            this.label7.Size = new System.Drawing.Size(203, 12);
             this.label7.TabIndex = 14;
             this.label7.Text = "label7";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -240,7 +241,7 @@
             // label8
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label8.Location = new System.Drawing.Point(966, 9);
+            this.label8.Location = new System.Drawing.Point(1046, 9);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(120, 12);
             this.label8.TabIndex = 16;
@@ -407,8 +408,10 @@
             this.listBox7.ItemHeight = 12;
             this.listBox7.Location = new System.Drawing.Point(809, 24);
             this.listBox7.Name = "listBox7";
-            this.listBox7.Size = new System.Drawing.Size(120, 484);
+            this.listBox7.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBox7.Size = new System.Drawing.Size(203, 484);
             this.listBox7.TabIndex = 26;
+            this.listBox7.SelectedIndexChanged += new System.EventHandler(this.listBox7_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -427,7 +430,7 @@
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox1.Location = new System.Drawing.Point(809, 520);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(120, 23);
+            this.checkBox1.Size = new System.Drawing.Size(95, 23);
             this.checkBox1.TabIndex = 28;
             this.checkBox1.Text = "checkBox1";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -438,10 +441,11 @@
             this.button5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.button5.Location = new System.Drawing.Point(809, 545);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(120, 23);
+            this.button5.Size = new System.Drawing.Size(203, 23);
             this.button5.TabIndex = 29;
             this.button5.Text = "button5";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // listBox8
             // 
@@ -450,12 +454,12 @@
             this.listBox8.FormattingEnabled = true;
             this.listBox8.HorizontalScrollbar = true;
             this.listBox8.ItemHeight = 12;
-            this.listBox8.Location = new System.Drawing.Point(966, 24);
+            this.listBox8.Location = new System.Drawing.Point(1046, 24);
             this.listBox8.Name = "listBox8";
             this.listBox8.Size = new System.Drawing.Size(120, 484);
             this.listBox8.TabIndex = 30;
-            this.listBox8.SelectedIndexChanged += new System.EventHandler(this.listBox8_SelectedIndexChanged);
             this.listBox8.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListBox8_MouseClick);
+            this.listBox8.SelectedIndexChanged += new System.EventHandler(this.listBox8_SelectedIndexChanged);
             this.listBox8.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox8_MouseDoubleClick);
             // 
             // label12
@@ -471,7 +475,7 @@
             // button6
             // 
             this.button6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button6.Location = new System.Drawing.Point(966, 515);
+            this.button6.Location = new System.Drawing.Point(1046, 515);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(120, 23);
             this.button6.TabIndex = 32;
@@ -482,7 +486,7 @@
             // button7
             // 
             this.button7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button7.Location = new System.Drawing.Point(966, 515);
+            this.button7.Location = new System.Drawing.Point(1046, 515);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(120, 23);
             this.button7.TabIndex = 33;
@@ -493,7 +497,7 @@
             // button8
             // 
             this.button8.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button8.Location = new System.Drawing.Point(966, 545);
+            this.button8.Location = new System.Drawing.Point(1046, 545);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(120, 23);
             this.button8.TabIndex = 34;
@@ -501,11 +505,22 @@
             this.button8.UseVisualStyleBackColor = true;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(957, 515);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(55, 23);
+            this.button9.TabIndex = 35;
+            this.button9.Text = "button9";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1110, 575);
+            this.ClientSize = new System.Drawing.Size(1193, 575);
+            this.Controls.Add(this.button9);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.label12);
@@ -570,6 +585,7 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
     }
 }
 

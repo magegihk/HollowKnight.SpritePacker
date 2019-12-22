@@ -23,6 +23,7 @@
   <Main_Button6>Watch</Main_Button6>
   <Main_Button7>UnWatch</Main_Button7>
   <Main_Button8>Replace All</Main_Button8>
+  <Main_Button9>Sort</Main_Button9>
   <Main_CheckBox1>Backup</Main_CheckBox1>
   <Message_Error01>Sprite dirctory doesn't exist.Please check "Get single sprites" below.</Message_Error01>
   <Message_Error02>Repeated sprites below in this collection are modified differently.Try again after replace the rest of them with the one you need.</Message_Error02>
