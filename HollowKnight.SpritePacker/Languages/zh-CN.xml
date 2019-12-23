@@ -24,6 +24,7 @@
   <Main_Button7>不监视</Main_Button7>
   <Main_Button8>全替换</Main_Button8>
   <Main_Button9>排序</Main_Button9>
+  <Main_Button10>添加</Main_Button10>
   <Main_CheckBox1>备份</Main_CheckBox1>
   <Message_Error01>精灵图目录不存在，请查看下方“如何导出精灵图”。</Message_Error01>
   <Message_Error02>当前图集存在以下精灵图被重复使用，重复精灵图被修改后不相同，请使之一致后再试。</Message_Error02>

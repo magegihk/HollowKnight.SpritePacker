@@ -631,6 +631,7 @@ namespace HollowKnight.SpritePacker
             button7.Text = GlobalData.GlobalLanguage.Main_Button7;
             button8.Text = GlobalData.GlobalLanguage.Main_Button8;
             button9.Text = GlobalData.GlobalLanguage.Main_Button9;
+            button10.Text = GlobalData.GlobalLanguage.Main_Button10;
             checkBox1.Text = GlobalData.GlobalLanguage.Main_CheckBox1;
         }
 
@@ -909,7 +910,17 @@ namespace HollowKnight.SpritePacker
             Log("[" + GlobalData.GlobalLanguage.Main_Button9 + "] " + backComparer.Sort.ToString());
             RefreshList7();
         }
+        private void button10_Click(object sender, EventArgs e)
+        {
+            if (listBox3.SelectedItem != null)
+            {
+                foreach (var item in listBox3.SelectedItems)
+                {
+                    listBox8.Items.Add(item);
 
+                }
+            }
+        }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             backup = checkBox1.Checked;
@@ -1055,7 +1066,7 @@ namespace HollowKnight.SpritePacker
 
         private void listBox8_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBox3.SelectedItem != null)
+            if (listBox8.SelectedItem != null)
             {
                 Frame = listBox8.SelectedItem.ToString();
             }
@@ -1076,5 +1087,7 @@ namespace HollowKnight.SpritePacker
                 Frame = Frame;
             }
         }
+
+        
     }
 }
