@@ -3,10 +3,17 @@
     partial class Form1
     {
         private System.Windows.Forms.Button button1;
-
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBox2;
 
         /// <summary>
         /// Required designer variable.
@@ -14,36 +21,29 @@
         private System.ComponentModel.IContainer components = null;
 
         private System.Windows.Forms.Label label1;
-
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label2;
-
         private System.Windows.Forms.Label label3;
-
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-
         private System.Windows.Forms.Label label9;
-
         private System.Windows.Forms.LinkLabel linkLabel1;
-
         private System.Windows.Forms.LinkLabel linkLabel2;
-
         private System.Windows.Forms.ListBox listBox1;
-
         private System.Windows.Forms.ListBox listBox2;
-
         private System.Windows.Forms.ListBox listBox3;
-
         private System.Windows.Forms.ListBox listBox4;
         private System.Windows.Forms.ListBox listBox5;
         private System.Windows.Forms.ListBox listBox6;
-
+        private System.Windows.Forms.ListBox listBox7;
+        private System.Windows.Forms.ListBox listBox8;
         private System.Windows.Forms.PictureBox pictureBox1;
-
+        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Timer timer1;
 
         /// <summary>
@@ -72,9 +72,19 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -83,7 +93,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -92,20 +101,11 @@
             this.listBox4 = new System.Windows.Forms.ListBox();
             this.listBox5 = new System.Windows.Forms.ListBox();
             this.listBox6 = new System.Windows.Forms.ListBox();
+            this.listBox7 = new System.Windows.Forms.ListBox();
+            this.listBox8 = new System.Windows.Forms.ListBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button4 = new System.Windows.Forms.Button();
-            this.listBox7 = new System.Windows.Forms.ListBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.listBox8 = new System.Windows.Forms.ListBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -142,6 +142,84 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // button4
+            // 
+            this.button4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button4.Location = new System.Drawing.Point(717, 545);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(55, 23);
+            this.button4.TabIndex = 25;
+            this.button4.Text = "button4";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button5.Location = new System.Drawing.Point(809, 545);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(203, 23);
+            this.button5.TabIndex = 29;
+            this.button5.Text = "button5";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button6
+            // 
+            this.button6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button6.Location = new System.Drawing.Point(1046, 515);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(120, 23);
+            this.button6.TabIndex = 32;
+            this.button6.Text = "button6";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button7.Location = new System.Drawing.Point(1046, 515);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(120, 23);
+            this.button7.TabIndex = 33;
+            this.button7.Text = "button7";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // button8
+            // 
+            this.button8.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button8.Location = new System.Drawing.Point(1046, 545);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(120, 23);
+            this.button8.TabIndex = 34;
+            this.button8.Text = "button8";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(957, 515);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(55, 23);
+            this.button9.TabIndex = 35;
+            this.button9.Text = "button9";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(809, 520);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(95, 23);
+            this.checkBox1.TabIndex = 28;
+            this.checkBox1.Text = "checkBox1";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // comboBox1
             // 
             this.comboBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -177,6 +255,36 @@
             this.label1.TabIndex = 7;
             this.label1.Text = "label1";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label10.Location = new System.Drawing.Point(495, 525);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(54, 12);
+            this.label10.TabIndex = 24;
+            this.label10.Text = "label10";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label11.Location = new System.Drawing.Point(561, 525);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(54, 12);
+            this.label11.TabIndex = 27;
+            this.label11.Text = "label11";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label12
+            // 
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label12.Location = new System.Drawing.Point(338, 541);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(120, 12);
+            this.label12.TabIndex = 31;
+            this.label12.Text = "label12";
+            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
             // 
@@ -257,16 +365,6 @@
             this.label9.TabIndex = 19;
             this.label9.Text = "label9";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label10
-            // 
-            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label10.Location = new System.Drawing.Point(495, 525);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(54, 12);
-            this.label10.TabIndex = 24;
-            this.label10.Text = "label10";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // linkLabel1
             // 
@@ -362,8 +460,36 @@
             this.listBox6.ScrollAlwaysVisible = true;
             this.listBox6.Size = new System.Drawing.Size(434, 88);
             this.listBox6.TabIndex = 6;
+            this.listBox6.Click += new System.EventHandler(this.ListBox6_MouseClick);
             this.listBox6.SelectedIndexChanged += new System.EventHandler(this.ListBox6_SelectedIndexChanged);
-            this.listBox6.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListBox6_MouseDoubleClick);
+            // 
+            // listBox7
+            // 
+            this.listBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.listBox7.FormattingEnabled = true;
+            this.listBox7.ItemHeight = 12;
+            this.listBox7.Location = new System.Drawing.Point(809, 24);
+            this.listBox7.Name = "listBox7";
+            this.listBox7.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBox7.Size = new System.Drawing.Size(203, 484);
+            this.listBox7.TabIndex = 26;
+            this.listBox7.SelectedIndexChanged += new System.EventHandler(this.listBox7_SelectedIndexChanged);
+            this.listBox7.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListBox7_MouseClick);
+            // 
+            // listBox8
+            // 
+            this.listBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.listBox8.BackColor = System.Drawing.SystemColors.Window;
+            this.listBox8.FormattingEnabled = true;
+            this.listBox8.HorizontalScrollbar = true;
+            this.listBox8.ItemHeight = 12;
+            this.listBox8.Location = new System.Drawing.Point(1046, 24);
+            this.listBox8.Name = "listBox8";
+            this.listBox8.Size = new System.Drawing.Size(120, 484);
+            this.listBox8.TabIndex = 30;
+            this.listBox8.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListBox8_MouseClick);
+            this.listBox8.SelectedIndexChanged += new System.EventHandler(this.listBox8_SelectedIndexChanged);
+            this.listBox8.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox8_MouseDoubleClick);
             // 
             // pictureBox1
             // 
@@ -388,132 +514,8 @@
             // timer1
             // 
             this.timer1.Enabled = true;
+            this.timer1.Interval = 83;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // button4
-            // 
-            this.button4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button4.Location = new System.Drawing.Point(717, 545);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(55, 23);
-            this.button4.TabIndex = 25;
-            this.button4.Text = "button4";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // listBox7
-            // 
-            this.listBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.listBox7.FormattingEnabled = true;
-            this.listBox7.ItemHeight = 12;
-            this.listBox7.Location = new System.Drawing.Point(809, 24);
-            this.listBox7.Name = "listBox7";
-            this.listBox7.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBox7.Size = new System.Drawing.Size(203, 484);
-            this.listBox7.TabIndex = 26;
-            this.listBox7.SelectedIndexChanged += new System.EventHandler(this.listBox7_SelectedIndexChanged);
-            // 
-            // label11
-            // 
-            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label11.Location = new System.Drawing.Point(561, 525);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(54, 12);
-            this.label11.TabIndex = 27;
-            this.label11.Text = "label11";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(809, 520);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(95, 23);
-            this.checkBox1.TabIndex = 28;
-            this.checkBox1.Text = "checkBox1";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // button5
-            // 
-            this.button5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button5.Location = new System.Drawing.Point(809, 545);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(203, 23);
-            this.button5.TabIndex = 29;
-            this.button5.Text = "button5";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // listBox8
-            // 
-            this.listBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.listBox8.BackColor = System.Drawing.SystemColors.Window;
-            this.listBox8.FormattingEnabled = true;
-            this.listBox8.HorizontalScrollbar = true;
-            this.listBox8.ItemHeight = 12;
-            this.listBox8.Location = new System.Drawing.Point(1046, 24);
-            this.listBox8.Name = "listBox8";
-            this.listBox8.Size = new System.Drawing.Size(120, 484);
-            this.listBox8.TabIndex = 30;
-            this.listBox8.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListBox8_MouseClick);
-            this.listBox8.SelectedIndexChanged += new System.EventHandler(this.listBox8_SelectedIndexChanged);
-            this.listBox8.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox8_MouseDoubleClick);
-            // 
-            // label12
-            // 
-            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label12.Location = new System.Drawing.Point(338, 541);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(120, 12);
-            this.label12.TabIndex = 31;
-            this.label12.Text = "label12";
-            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // button6
-            // 
-            this.button6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button6.Location = new System.Drawing.Point(1046, 515);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(120, 23);
-            this.button6.TabIndex = 32;
-            this.button6.Text = "button6";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
-            // button7
-            // 
-            this.button7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button7.Location = new System.Drawing.Point(1046, 515);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(120, 23);
-            this.button7.TabIndex = 33;
-            this.button7.Text = "button7";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
-            // button8
-            // 
-            this.button8.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button8.Location = new System.Drawing.Point(1046, 545);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(120, 23);
-            this.button8.TabIndex = 34;
-            this.button8.Text = "button8";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
-            // button9
-            // 
-            this.button9.Location = new System.Drawing.Point(957, 515);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(55, 23);
-            this.button9.TabIndex = 35;
-            this.button9.Text = "button9";
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // Form1
             // 
@@ -571,21 +573,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.ListBox listBox7;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.ListBox listBox8;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button9;
     }
 }
 

@@ -36,16 +36,16 @@ namespace HollowKnight.SpritePacker
                     {
                         if (atlas.Name.EndsWith(".png") && !atlas.Name.StartsWith("Gen-"))
                         {
-                            if (Collection.GetCollectionByName(atlas.Name.Substring(0, atlas.Name.Length - 4)) == null)
+                            if (Collection.GetCollectionByName(atlas.Name) == null)
                             {
-                                Collection.collections.Add(new Collection(atlas.Name.Substring(0, atlas.Name.Length - 4), atlas));
+                                Collection.collections.Add(new Collection(atlas.Name, atlas));
                             }
                         }
                         if (atlas.Name.EndsWith(".png") && atlas.Name.StartsWith("Gen-"))
                         {
-                            if (Collection.GetGenCollectionByName(atlas.Name.Substring(0, atlas.Name.Length - 4)) == null)
+                            if (Collection.GetGenCollectionByName(atlas.Name) == null)
                             {
-                                Collection.gencollections.Add(new Collection(atlas.Name.Substring(0, atlas.Name.Length - 4), atlas));
+                                Collection.gencollections.Add(new Collection(atlas.Name, atlas));
                             }
                         }
                     }

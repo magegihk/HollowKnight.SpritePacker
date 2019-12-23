@@ -44,6 +44,7 @@ namespace HollowKnight.SpritePacker
         public string Message_Error03 = "";
         public string Message_Error04 = "";
         public string Message_Error05 = "";
+        public string Message_Error06 = "";
         public string Message_01 = "";
 
         #endregion Message
@@ -122,6 +123,7 @@ namespace HollowKnight.SpritePacker
             Message_Error03 = DicLanguage["Message_Error03"];
             Message_Error04 = DicLanguage["Message_Error04"];
             Message_Error05 = DicLanguage["Message_Error05"];
+            Message_Error06 = DicLanguage["Message_Error06"];
             Message_01 = DicLanguage["Message_01"];
         }
     }

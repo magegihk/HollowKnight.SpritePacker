@@ -14,7 +14,7 @@ namespace HollowKnight.SpritePacker
             info = _info;
             spriteInfo = _spriteInfo;
             sprite = GetSprite(_info, _spriteInfo);
-            collection = Collection.GetCollectionByName(sprite.collectionname);
+            collection = Collection.GetCollectionByName(sprite.collectionname + ".png");
             collection.frames.Add(this);
         }
         public Frame(FileInfo _info)

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Windows.Forms;
@@ -12,22 +12,39 @@ namespace HollowKnight.SpritePacker
     {
         #region Fields
 
+        public bool replaceall = false;
         private readonly string folderpath = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\..\\locallow\\Team Cherry\\Hollow Knight\\sprites";
-        private bool refreshing;
-        private bool goodtopack = false;
-        private bool check = false;
-        private bool modechosen = false;
-        private bool fixedmode = false;
-        private bool backup = true;
-
         private string _anim;
         private string _clip;
         private string _frame;
         private string _oriatlas;
         private string _genatlas;
-        private string _msg;
-        private List<string> _backups;
-        private string _changed;
+        private string _backup;
+        private bool backup = true;
+        private bool check = false;
+        private bool fixedmode = false;
+        private bool goodtopack = false;
+        private bool modechosen = false;
+        private List<Frame> _backups;
+        private SpritesFolder spritesFolder;
+        private BackComparer backComparer = new BackComparer();
+        private FileSystemWatcher watcher;
+        private InspectMode _im = InspectMode.Animation;
+        private enum InspectMode
+        {
+            Animation,
+            Collection,
+            GenCollection,
+            AnimFrame,
+            CollFrame,
+            Backup
+        }
+        private enum ReplaceMode
+        {
+            Single,
+            All,
+            Restore
+        }
         private string Anim
         {
             get
@@ -35,6 +52,14 @@ namespace HollowKnight.SpritePacker
                 if (listBox1.SelectedItem != null)
                 {
                     _anim = listBox1.SelectedItem.ToString();
+                }
+                else if (listBox1.Items.Count > 0)
+                {
+                    _anim = listBox1.Items[0].ToString();
+                }
+                else
+                {
+                    _anim = "";
                 }
                 return _anim;
             }
@@ -44,8 +69,8 @@ namespace HollowKnight.SpritePacker
                 if (index != ListBox.NoMatches)
                 {
                     listBox1.SelectedIndex = index;
+                    _anim = value;
                 }
-                _anim = value;
             }
         }
         private string Clip
@@ -56,6 +81,14 @@ namespace HollowKnight.SpritePacker
                 {
                     _clip = listBox2.SelectedItem.ToString();
                 }
+                else if (listBox2.Items.Count > 0)
+                {
+                    _clip = listBox2.Items[0].ToString();
+                }
+                else
+                {
+                    _clip = "";
+                }
                 return _clip;
             }
             set
@@ -64,17 +97,25 @@ namespace HollowKnight.SpritePacker
                 if (index != ListBox.NoMatches)
                 {
                     listBox2.SelectedIndex = index;
+                    _clip = value;
                 }
-                _clip = value;
             }
         }
-        private string Freame
+        private string Frame
         {
             get
             {
                 if (listBox3.SelectedItem != null)
                 {
                     _frame = listBox3.SelectedItem.ToString();
+                }
+                else if (listBox3.Items.Count > 0)
+                {
+                    _frame = listBox3.Items[0].ToString();
+                }
+                else
+                {
+                    _frame = "";
                 }
                 return _frame;
             }
@@ -84,8 +125,12 @@ namespace HollowKnight.SpritePacker
                 if (index != ListBox.NoMatches)
                 {
                     listBox3.SelectedIndex = index;
+                    _frame = value;
+                    if (IM != InspectMode.Backup)
+                    {
+                        ShowPic(IM);
+                    }
                 }
-                _frame = value;
             }
         }
         private string Oriatlas
@@ -96,6 +141,14 @@ namespace HollowKnight.SpritePacker
                 {
                     _oriatlas = listBox4.SelectedItem.ToString();
                 }
+                else if (listBox4.Items.Count > 0)
+                {
+                    _oriatlas = listBox4.Items[0].ToString();
+                }
+                else
+                {
+                    _oriatlas = "";
+                }
                 return _oriatlas;
             }
             set
@@ -104,8 +157,9 @@ namespace HollowKnight.SpritePacker
                 if (index != ListBox.NoMatches)
                 {
                     listBox4.SelectedIndex = index;
+                    _oriatlas = value;
+                    ShowPic(IM);
                 }
-                _oriatlas = value;
             }
         }
         private string Genatlas
@@ -116,6 +170,14 @@ namespace HollowKnight.SpritePacker
                 {
                     _genatlas = listBox5.SelectedItem.ToString();
                 }
+                else if (listBox5.Items.Count > 0)
+                {
+                    _genatlas = listBox5.Items[0].ToString();
+                }
+                else
+                {
+                    _genatlas = "";
+                }
                 return _genatlas;
             }
             set
@@ -124,109 +186,99 @@ namespace HollowKnight.SpritePacker
                 if (index != ListBox.NoMatches)
                 {
                     listBox5.SelectedIndex = index;
+                    _genatlas = value;
+                    ShowPic(IM);
                 }
-                _genatlas = value;
             }
         }
-        private string Msg
-        {
-            get
-            {
-                if (listBox6.SelectedItem != null)
-                {
-                    _msg = listBox6.SelectedItem.ToString();
-                }
-                return _msg;
-            }
-            set
-            {
-                int index = listBox6.FindStringExact(value);
-                if (index != ListBox.NoMatches)
-                {
-                    listBox6.SelectedIndex = index;
-                }
-                _msg = value;
-            }
-        }
-        private List<string> Backups
+        private string Backup
         {
             get
             {
                 if (listBox7.SelectedItem != null)
                 {
-                    _backups = new List<string>();
-                    foreach (var item in listBox7.SelectedItems)
-                    {
-                        _backups.Add(item.ToString());
-                    }
+                    _backup = listBox7.SelectedItem.ToString();
                 }
-                return _backups;
+                else if (listBox7.Items.Count > 0)
+                {
+                    _backup = listBox7.Items[0].ToString();
+                }
+                else
+                {
+                    _backup = "";
+                }
+                return _backup;
             }
             set
             {
-                listBox7.SelectedIndices.Clear();
-                foreach (var item in value)
-                {
-                    int index = listBox7.FindStringExact(item);
-                    if (index != ListBox.NoMatches)
-                    {
-                        listBox7.SelectedIndices.Add(index);
-                    }
-                }
-                _backups = value;
-            }
-        }
-        private string Changed
-        {
-            get
-            {
-                if (listBox8.SelectedItem != null)
-                {
-                    _changed = listBox8.SelectedItem.ToString();
-                }
-                return _changed;
-            }
-            set
-            {
-                int index = listBox8.FindStringExact(value);
+                int index = listBox7.FindStringExact(value);
                 if (index != ListBox.NoMatches)
                 {
-                    listBox8.SelectedIndex = index;
+                    listBox7.SelectedIndex = index;
+                    _backup = value;
+                    ShowPic(IM);
                 }
-                _changed = value;
             }
         }
-        private int FrameRate = 12;
-        private BackComparer backComparer = new BackComparer();
-
-        private InspectMode _im = InspectMode.Animation;
-
-        private enum InspectMode
+        private InspectMode IM
         {
-            Animation,
-            Collection,
-            AnimFrame,
-            CollFrame
+            get { return _im; }
+            set
+            {
+                switch (value)
+                {
+                    case InspectMode.Animation:
+                        pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+                        break;
+                    case InspectMode.Collection:
+                        pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+                        button1.Visible = true;
+                        goodtopack = false;
+                        check = false;
+                        replaceall = false;
+                        break;
+                    case InspectMode.GenCollection:
+                        pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+                        break;
+                    case InspectMode.AnimFrame:
+                        pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+                        if (_im == InspectMode.Collection || _im == InspectMode.CollFrame || _im == InspectMode.Backup)
+                        {
+                            value = InspectMode.CollFrame;
+                        }
+                        break;
+                    case InspectMode.CollFrame:
+                        pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+                        if (_im == InspectMode.Animation || _im == InspectMode.AnimFrame)
+                        {
+                            value = InspectMode.AnimFrame;
+                        }
+                        break;
+                    case InspectMode.Backup:
+                        pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+                        break;
+                    default:
+                        break;
+                }
+                _im = value;
+            }
         }
-        private enum ReplaceMode
-        {
-            Single,
-            All,
-            Restore
-        }
-        private SpritesFolder spritesFolder;
-        private FileSystemWatcher watcher;
-
-        public bool replaceall = false;
-
 
         #endregion Fields
 
         #region Event listeners
 
+        private void OnProcess(object source, FileSystemEventArgs e)
+        {
+            string changed = e.Name.Split('\\')[2];
+            if (listBox8.FindStringExact(changed) == ListBox.NoMatches)
+            {
+                listBox8.Invoke(new MethodInvoker(delegate () { listBox8.Items.Add(changed); }));
+                this.replaceall = false;
+            }
+        }
         private FileSystemWatcher WatcherStart(string path, string filter)
         {
-
             FileSystemWatcher watcher = new FileSystemWatcher();
             watcher.Path = path;
             watcher.Filter = filter;
@@ -237,317 +289,148 @@ namespace HollowKnight.SpritePacker
             return watcher;
         }
 
-        private void OnProcess(object source, FileSystemEventArgs e)
+        #endregion Event listeners
+
+        #region Refreshes
+
+        private string RefreshList(string chosen, ListBox listBox, List<string> list)
         {
-            string changed = e.Name.Split('\\')[2];
-            if (listBox8.FindStringExact(changed) == ListBox.NoMatches)
+            listBox.Items.Clear();
+            if (CheckSavePath())
             {
-                listBox8.Invoke(new MethodInvoker(delegate () { listBox8.Items.Add(changed); }));
-                this.replaceall = false;
-
+                foreach (var item in list)
+                {
+                    listBox.Items.Add(item);
+                }
             }
-
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+            return chosen;
         }
+        private void RefreshForm()
+        {
+            SetValues();
+            if (CheckSavePath())
+            {
+                Collection.collections.Clear();
+                Collection.gencollections.Clear();
+                spritesFolder = new SpritesFolder(new DirectoryInfo(folderpath));
 
-
-
-
+                //refresh 1
+                Anim = RefreshList(Anim, listBox1, spritesFolder.animations.Select(a => a.info.Name).ToList());
+                //refresh 2
+                Clip = RefreshList(Clip, listBox2, spritesFolder.animations.First(a => a.info.Name == Anim).clips.Select(c => c.info.Name).ToList());
+                //refresh 3
+                if (IM == InspectMode.Animation || IM == InspectMode.AnimFrame)
+                {
+                    Frame = RefreshList(Frame, listBox3, spritesFolder.animations.First(a => a.info.Name == Anim).clips.First(c => c.info.Name == Clip).frames.Select(f => f.info.Name).ToList());
+                }
+                if (IM == InspectMode.Collection || IM == InspectMode.CollFrame || IM == InspectMode.Backup)
+                {
+                    Collection.collections.Where(c => c.info.FullName.Contains(Anim)).First(c => c.name == Oriatlas).SortFrame();
+                    Frame = RefreshList(Frame, listBox3, Collection.collections.Where(c => c.info.FullName.Contains(Anim)).First(c => c.name == Oriatlas).frames.Select(f => f.info.Name).ToList());
+                }
+                //refresh 4
+                Oriatlas = RefreshList(Oriatlas, listBox4, Collection.collections.Where(c => c.info.FullName.Contains(Anim)).Select(c => c.name).ToList());
+                //refresh 5
+                Genatlas = RefreshList(Genatlas, listBox5, Collection.gencollections.Where(g => g.info.FullName.Contains(Anim)).Select(g => g.name).ToList());
+                //refresh 6
+                listBox6.Items.Clear();
+                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
+                //refresh 7
+                _backups = new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories).Select(f => new Frame(f)).ToList();
+                _backups.Sort(backComparer);
+                listBox7.Items.Clear();
+                foreach (var item in _backups)
+                {
+                    listBox7.Items.Add(item.info.Name);
+                }
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+        }
+        private void RefreshList1()
+        {
+            Anim = RefreshList(Anim, listBox1, spritesFolder.animations.Select(a => a.info.Name).ToList());
+        }
+        private void RefreshList2()
+        {
+            Clip = RefreshList(Clip, listBox2, spritesFolder.animations.First(a => a.info.Name == Anim).clips.Select(c => c.info.Name).ToList());
+        }
+        private void RefreshList3()
+        {
+            if (IM == InspectMode.Animation || IM == InspectMode.AnimFrame)
+            {
+                Frame = RefreshList(Frame, listBox3, spritesFolder.animations.First(a => a.info.Name == Anim).clips.First(c => c.info.Name == Clip).frames.Select(f => f.info.Name).ToList());
+            }
+            if (IM == InspectMode.Collection || IM == InspectMode.CollFrame || IM == InspectMode.Backup)
+            {
+                Collection.collections.Where(c => c.info.FullName.Contains(Anim)).First(c => c.name == Oriatlas).SortFrame();
+                Frame = RefreshList(Frame, listBox3, Collection.collections.Where(c => c.info.FullName.Contains(Anim)).First(c => c.name == Oriatlas).frames.Select(f => f.info.Name).ToList());
+            }
+        }
+        private void RefreshList4()
+        {
+            Oriatlas = RefreshList(Oriatlas, listBox4, Collection.collections.Where(c => c.info.FullName.Contains(Anim)).Select(c => c.name).ToList());
+        }
+        private void RefreshList5()
+        {
+            Genatlas = RefreshList(Genatlas, listBox5, Collection.gencollections.Where(g => g.info.FullName.Contains(Anim)).Select(g => g.name).ToList());
+        }
+        private void RefreshList6()
+        {
+            listBox6.Items.Clear();
+            if (CheckSavePath())
+            {
+                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+        }
+        private void RefreshList7()
+        {
+            listBox7.Items.Clear();
+            if (CheckSavePath())
+            {
+                _backups = new DirectoryInfo(folderpath + "\\" + Anim).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories).Select(f => new Frame(f)).ToList();
+                _backups.Sort(backComparer);
+                foreach (var item in _backups)
+                {
+                    listBox7.Items.Add(item.info.Name);
+                }
+            }
+            else
+            {
+                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
+            }
+        }
 
         #endregion
 
         #region Functions
-
-        private void SetValues()
-        {
-            Text = GlobalData.GlobalLanguage.Main_Title;
-            label1.Text = GlobalData.GlobalLanguage.Main_Label1;
-            label2.Text = GlobalData.GlobalLanguage.Main_Label2;
-            label3.Text = GlobalData.GlobalLanguage.Main_Label3;
-            label4.Text = GlobalData.GlobalLanguage.Main_Label4;
-            label5.Text = GlobalData.GlobalLanguage.Main_Label5;
-            label6.Text = GlobalData.GlobalLanguage.Main_Label6;
-            label7.Text = GlobalData.GlobalLanguage.Main_Label7;
-            label8.Text = GlobalData.GlobalLanguage.Main_Label8;
-            label9.Text = GlobalData.GlobalLanguage.Main_Label9;
-            label10.Text = GlobalData.GlobalLanguage.Main_Label10;
-            label11.Text = GlobalData.GlobalLanguage.Main_Label11;
-            label12.Text = GlobalData.GlobalLanguage.Main_Label12;
-            linkLabel1.Text = GlobalData.GlobalLanguage.Main_LinkLabel1;
-            linkLabel2.Text = GlobalData.GlobalLanguage.Main_LinkLabel2;
-            button1.Text = GlobalData.GlobalLanguage.Main_Button1;
-            button2.Text = GlobalData.GlobalLanguage.Main_Button2;
-            button3.Text = GlobalData.GlobalLanguage.Main_Button3;
-            button4.Text = GlobalData.GlobalLanguage.Main_Button4;
-            button5.Text = GlobalData.GlobalLanguage.Main_Button5;
-            button6.Text = GlobalData.GlobalLanguage.Main_Button6;
-            button7.Text = GlobalData.GlobalLanguage.Main_Button7;
-            button8.Text = GlobalData.GlobalLanguage.Main_Button8;
-            button9.Text = GlobalData.GlobalLanguage.Main_Button9;
-            checkBox1.Text = GlobalData.GlobalLanguage.Main_CheckBox1;
-        }
 
         public void Log(string s)
         {
             listBox6.Items.Add(s);
             listBox6.TopIndex = listBox6.Items.Count - 3;
         }
-
-        private bool CheckSavePath()
+        private string CalculateMD5(Frame frame)
         {
-            return Directory.Exists(folderpath);
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(frame.info.FullName))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
         }
-
-
-        private void RefreshList1()
-        {
-            refreshing = true;
-            listBox1.Items.Clear();
-            if (CheckSavePath())
-            {
-                foreach (var anim in spritesFolder.animations)
-                {
-                    listBox1.Items.Add(anim.info.Name);
-                }
-                listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-        private void RefreshList2()
-        {
-            refreshing = true;
-            listBox2.Items.Clear();
-            if (CheckSavePath())
-            {
-                foreach (var anim in spritesFolder.animations)
-                {
-                    if (anim.info.Name == _anim)
-                    {
-                        foreach (var clip in anim.clips)
-                        {
-                            listBox2.Items.Add(clip.info.Name);
-                        }
-                    }
-                }
-                listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-        private void RefreshList3()
-        {
-            refreshing = true;
-            listBox3.Items.Clear();
-            if (CheckSavePath())
-            {
-                foreach (var anim in spritesFolder.animations)
-                {
-                    if (anim.info.Name == _anim)
-                    {
-                        foreach (var clip in anim.clips)
-                        {
-                            if (clip.info.Name == _clip && _im != InspectMode.Collection && _im != InspectMode.CollFrame)
-                            {
-                                foreach (var frame in clip.frames)
-                                {
-                                    listBox3.Items.Add(frame.info.Name);
-                                }
-                            }
-                        }
-                    }
-                }
-                foreach (var collection in Collection.collections)
-                {
-                    if (collection.info.FullName.Contains(_anim))
-                    {
-                        if (_im == InspectMode.Collection && collection.name == _oriatlas)
-                        {
-                            collection.SortFrame();
-                            foreach (var frame in collection.frames)
-                            {
-                                listBox3.Items.Add(frame.info.Name);
-                            }
-                        }
-                    }
-                }
-                listBox3.SelectedIndex = listBox3.FindStringExact(_frame);
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-        private void RefreshList4()
-        {
-            refreshing = true;
-            listBox4.Items.Clear();
-            if (CheckSavePath())
-            {
-                foreach (var collection in Collection.collections)
-                {
-                    if (collection.info.FullName.Contains(_anim))
-                    {
-                        listBox4.Items.Add(collection.name);
-                    }
-                }
-                listBox4.SelectedIndex = listBox4.FindStringExact(_oriatlas);
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-        private void RefreshList5()
-        {
-            refreshing = true;
-            listBox5.Items.Clear();
-            if (CheckSavePath())
-            {
-                foreach (var collection in Collection.gencollections)
-                {
-                    if (collection.info.FullName.Contains(_anim))
-                        listBox5.Items.Add(collection.name);
-                }
-                listBox5.SelectedIndex = listBox5.FindStringExact(_genatlas);
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-        private void RefreshList6()
-        {
-            refreshing = true;
-            listBox6.Items.Clear();
-            if (CheckSavePath())
-            {
-                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-        private void RefreshList7()
-        {
-            refreshing = true;
-            listBox7.Items.Clear();
-            _backups = new List<string>();
-            if (CheckSavePath())
-            {
-                foreach (var backup in new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories))
-                {
-                    _backups.Add(backup.Name);
-                }
-                _backups.Sort(backComparer);
-                foreach (var item in _backups)
-                {
-                    listBox7.Items.Add(item);
-                }
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-        private void RefreshForm()
-        {
-            refreshing = true;
-            listBox1.Items.Clear();
-            listBox2.Items.Clear();
-            listBox3.Items.Clear();
-            listBox4.Items.Clear();
-            listBox5.Items.Clear();
-            listBox6.Items.Clear();
-            listBox7.Items.Clear();
-            _backups = new List<string>();
-
-            Collection.collections.Clear();
-            Collection.gencollections.Clear();
-
-            SetValues();
-            if (CheckSavePath())
-            {
-
-                spritesFolder = new SpritesFolder(new DirectoryInfo(folderpath));
-                //refresh 123
-                foreach (var anim in spritesFolder.animations)
-                {
-                    listBox1.Items.Add(anim.info.Name);
-
-                    if (anim.info.Name == _anim)
-                    {
-                        foreach (var clip in anim.clips)
-                        {
-                            listBox2.Items.Add(clip.info.Name);
-                            if (clip.info.Name == _clip && _im != InspectMode.Collection && _im != InspectMode.CollFrame)
-                            {
-                                foreach (var frame in clip.frames)
-                                {
-                                    listBox3.Items.Add(frame.info.Name);
-                                }
-                            }
-                        }
-                    }
-                }
-                //refresh 3,4
-                foreach (var collection in Collection.collections)
-                {
-                    if (collection.info.FullName.Contains(_anim))
-                    {
-                        listBox4.Items.Add(collection.name);
-                        if (_im == InspectMode.Collection && collection.name == _oriatlas)
-                        {
-                            collection.SortFrame();
-                            foreach (var frame in collection.frames)
-                            {
-                                listBox3.Items.Add(frame.info.Name);
-                            }
-                        }
-                    }
-                }
-                //refresh 5
-                foreach (var collection in Collection.gencollections)
-                {
-                    if (collection.info.FullName.Contains(_anim))
-                        listBox5.Items.Add(collection.name);
-                }
-                //refresh 6
-                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
-                //refresh 7
-                foreach (var backup in new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories))
-                {
-                    _backups.Add(backup.Name);
-                }
-                _backups.Sort(backComparer);
-                foreach (var item in _backups)
-                {
-                    listBox7.Items.Add(item);
-                }
-                listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
-                listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
-                listBox3.SelectedIndex = listBox3.FindStringExact(_frame);
-                listBox4.SelectedIndex = listBox4.FindStringExact(_oriatlas);
-                listBox5.SelectedIndex = listBox5.FindStringExact(_genatlas);
-            }
-            else
-            {
-                Log("[Error01] " + GlobalData.GlobalLanguage.Message_Error01);
-            }
-            refreshing = false;
-        }
-
         private void Check()
         {
             goodtopack = true;
@@ -571,9 +454,8 @@ namespace HollowKnight.SpritePacker
                         }
                         if (!findone)
                         {
-                            Log("\t" + item.ToString());
+                            Log(item.ToString());
                             replaceall = false;
-
                         }
                     }
                     if (replaceall)
@@ -588,13 +470,12 @@ namespace HollowKnight.SpritePacker
                             {
                                 goodtopack = false;
                                 Log("[Error02] " + GlobalData.GlobalLanguage.Message_Error02);
-                                Log("\t" + collection.frames[i].info.Name);
-                                Log("\t" + collection.frames[i + 1].info.Name);
+                                Log(collection.frames[i].info.Name);
+                                Log(collection.frames[i + 1].info.Name);
                                 listBox3.SelectedIndex = listBox3.FindStringExact(collection.frames[i].info.Name);
                                 listBox3.TopIndex = listBox3.SelectedIndex;
                                 return;
                             }
-
                         }
                     }
                 }
@@ -602,8 +483,38 @@ namespace HollowKnight.SpritePacker
             button1.Visible = false;
             Log("[" + GlobalData.GlobalLanguage.Main_Button1 + "] " + GlobalData.GlobalLanguage.Message_01);
         }
-        
-
+        private bool CheckSavePath()
+        {
+            return Directory.Exists(folderpath);
+        }
+        private bool FrameMD5HashEquals(Frame a, Frame b)
+        {
+            return CalculateMD5(a).Equals(CalculateMD5(b));
+        }
+        private bool FramePixelEquals(Frame a, Frame b)
+        {
+            using (Bitmap bitmapA = Cut(a))
+            {
+                using (Bitmap bitmapB = Cut(b))
+                {
+                    bool equal = true;
+                    for (int i = 0; i < bitmapA.Width; i++)
+                    {
+                        for (int j = 0; j < bitmapA.Height; j++)
+                        {
+                            if (i < bitmapB.Width && j < bitmapB.Height)
+                            {
+                                if (bitmapA.GetPixel(i, j) != bitmapB.GetPixel(i, j))
+                                {
+                                    equal = false;
+                                }
+                            }
+                        }
+                    }
+                    return equal;
+                }
+            }
+        }
         private void Replace(ReplaceMode mode)
         {
             foreach (var collection in Collection.collections)
@@ -618,14 +529,17 @@ namespace HollowKnight.SpritePacker
                             items = new string[] { _frame };
                             frames = collection.frames;
                             break;
+
                         case ReplaceMode.All:
                             items = listBox8.Items.OfType<string>().ToArray();
                             frames = collection.frames;
                             break;
+
                         case ReplaceMode.Restore:
-                            items = listBox7.Items.OfType<string>().ToArray();
+                            items = listBox7.SelectedItems.OfType<string>().ToArray();
                             frames = new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories).Select(f => new Frame(f)).ToList();
                             break;
+
                         default:
                             items = new string[] { };
                             frames = collection.frames;
@@ -657,7 +571,7 @@ namespace HollowKnight.SpritePacker
                                             File.Copy(dst, bak);
                                             Log("[" + GlobalData.GlobalLanguage.Main_CheckBox1 + "] " + _dst + " => " + _bak);
                                         }
-                                        if (fixedmode && !FramePixelEquals(frame, frameneeded) && mode != ReplaceMode.Restore)
+                                        if (mode != ReplaceMode.Restore && fixedmode && !FramePixelEquals(frame, frameneeded))
                                         {
                                             Bitmap fix = Fix(cutted, frame);
                                             if (File.Exists(dst))
@@ -666,7 +580,7 @@ namespace HollowKnight.SpritePacker
                                             }
                                             fix.Save(dst);
                                         }
-                                        if (!fixedmode && !FrameMD5HashEquals(frame, frameneeded) || mode == ReplaceMode .Restore)
+                                        if (mode == ReplaceMode.Restore || !fixedmode && !FrameMD5HashEquals(frame, frameneeded))
                                         {
                                             if (File.Exists(dst))
                                             {
@@ -675,6 +589,10 @@ namespace HollowKnight.SpritePacker
                                             File.Copy(orig, dst);
                                             if (mode == ReplaceMode.Restore && File.Exists(orig))
                                             {
+                                                if (pictureBox1.Image != null)
+                                                {
+                                                    pictureBox1.Image.Dispose();
+                                                }
                                                 File.Delete(orig);
                                             }
                                         }
@@ -684,150 +602,68 @@ namespace HollowKnight.SpritePacker
                             }
                         }
                     }
-
                 }
             }
         }
-        private string CalculateMD5(Frame frame)
+        private void SetValues()
         {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(frame.info.FullName))
-                {
-                    var hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                }
-            }
+            Text = GlobalData.GlobalLanguage.Main_Title;
+            label1.Text = GlobalData.GlobalLanguage.Main_Label1;
+            label2.Text = GlobalData.GlobalLanguage.Main_Label2;
+            label3.Text = GlobalData.GlobalLanguage.Main_Label3;
+            label4.Text = GlobalData.GlobalLanguage.Main_Label4;
+            label5.Text = GlobalData.GlobalLanguage.Main_Label5;
+            label6.Text = GlobalData.GlobalLanguage.Main_Label6;
+            label7.Text = GlobalData.GlobalLanguage.Main_Label7;
+            label8.Text = GlobalData.GlobalLanguage.Main_Label8;
+            label9.Text = GlobalData.GlobalLanguage.Main_Label9;
+            label10.Text = GlobalData.GlobalLanguage.Main_Label10;
+            label11.Text = GlobalData.GlobalLanguage.Main_Label11;
+            label12.Text = GlobalData.GlobalLanguage.Main_Label12;
+            linkLabel1.Text = GlobalData.GlobalLanguage.Main_LinkLabel1;
+            linkLabel2.Text = GlobalData.GlobalLanguage.Main_LinkLabel2;
+            button1.Text = GlobalData.GlobalLanguage.Main_Button1;
+            button2.Text = GlobalData.GlobalLanguage.Main_Button2;
+            button3.Text = GlobalData.GlobalLanguage.Main_Button3;
+            button4.Text = GlobalData.GlobalLanguage.Main_Button4;
+            button5.Text = GlobalData.GlobalLanguage.Main_Button5;
+            button6.Text = GlobalData.GlobalLanguage.Main_Button6;
+            button7.Text = GlobalData.GlobalLanguage.Main_Button7;
+            button8.Text = GlobalData.GlobalLanguage.Main_Button8;
+            button9.Text = GlobalData.GlobalLanguage.Main_Button9;
+            checkBox1.Text = GlobalData.GlobalLanguage.Main_CheckBox1;
         }
 
-        private bool FrameMD5HashEquals(Frame a, Frame b)
-        {
-            return CalculateMD5(a).Equals(CalculateMD5(b));
-        }
-
-        private bool FramePixelEquals(Frame a, Frame b)
-        {
-            using (Bitmap bitmapA = Cut(a))
-            {
-                using (Bitmap bitmapB = Cut(b))
-                {
-                    bool equal = true;
-                    for (int i = 0; i < bitmapA.Width; i++)
-                    {
-                        for (int j = 0; j < bitmapA.Height; j++)
-                        {
-                            if (i < bitmapB.Width && j < bitmapB.Height)
-                            {
-                                if (bitmapA.GetPixel(i, j) != bitmapB.GetPixel(i, j))
-                                {
-                                    equal = false;
-                                }
-                            }
-                        }
-                    }
-                    return equal;
-                }
-            }
-        }
         #endregion Functions
 
         #region Graphics
 
-        private void ShowPic(InspectMode mode)
+        private Bitmap Cut(Frame frame)
         {
-            string path;
-            switch (mode)
+            if (frame.sprite == null)
             {
-                case InspectMode.Animation:
-                    path = folderpath + "\\" + _anim + "\\" + _clip + "\\" + _frame;
-                    break;
-                case InspectMode.Collection:
-                    path = "";
-                    break;
-                case InspectMode.AnimFrame:
-                    path = folderpath + "\\" + _anim + "\\" + _clip + "\\" + _frame;
-                    break;
-                case InspectMode.CollFrame:
-                    path = "";
-                    break;
-                default:
-                    path = "";
-                    break;
+                return null;
             }
-            if (File.Exists(path))
+            using (Bitmap bitmap = new Bitmap(frame.info.FullName))
             {
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                }
-                pictureBox1.Image = Image.FromFile(path);
+                return bitmap.Clone(new Rectangle(frame.sprite.xr, bitmap.Height - frame.sprite.yr - frame.sprite.height, frame.sprite.width, frame.sprite.height), bitmap.PixelFormat);
             }
         }
-        private void ShowFrame()
+        private Bitmap Fix(Bitmap cut, Frame frame)
         {
-            if (_im == InspectMode.Animation || _im == InspectMode.AnimFrame)
+            using (Bitmap temp = new Bitmap(frame.info.FullName))
             {
-                string Fpath = folderpath + "\\" + _anim + "\\" + _clip + "\\" + _frame;
-                if (File.Exists(Fpath))
+                Bitmap fix = new Bitmap(temp);
+                for (int i = 0; i < cut.Width; i++)
                 {
-                    if (pictureBox1.Image != null)
+                    for (int j = 0; j < cut.Height; j++)
                     {
-                        pictureBox1.Image.Dispose();
-                    }
-                    pictureBox1.Image = Image.FromFile(Fpath);
-                }
-            }
-            if (_im == InspectMode.CollFrame)
-            {
-                Collection collection = Collection.GetCollectionByName(_oriatlas);
-                foreach (var frame in collection.frames)
-                {
-                    if (frame.info.Name == _frame)
-                    {
-                        if (pictureBox1.Image != null)
-                        {
-                            pictureBox1.Image.Dispose();
-                        }
-                        pictureBox1.Image = Image.FromFile(frame.info.FullName);
-                        Log("[FilePath] " + frame.info.FullName.Replace(new DirectoryInfo(folderpath).FullName + "\\", ""));
-
-                        _anim = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[0];
-                        _clip = frame.info.DirectoryName.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[1];
-                        refreshing = true;
-                        listBox1.SelectedIndex = listBox1.FindStringExact(_anim);
-                        listBox2.SelectedIndex = listBox2.FindStringExact(_clip);
-                        refreshing = false;
+                        fix.SetPixel(i + frame.sprite.xr, fix.Height - (j + frame.sprite.yr) - 1, cut.GetPixel(i, cut.Height - j - 1));
                     }
                 }
+                return fix;
             }
         }
-
-        private void ShowCollection()
-        {
-            string Cpath = folderpath + "\\" + _anim + "\\0.Atlases\\" + _oriatlas + ".png";
-            if (File.Exists(Cpath))
-            {
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                }
-                pictureBox1.Image = Image.FromFile(Cpath);
-            }
-        }
-
-        private void ShowGenCollection()
-        {
-            string Cpath = folderpath + "\\" + _anim + "\\0.Atlases\\" + _genatlas + ".png";
-            if (File.Exists(Cpath))
-            {
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                }
-                pictureBox1.Image = Image.FromFile(Cpath);
-            }
-        }
-
         private void Pack(Collection collection)
         {
             progressBar1.Visible = true;
@@ -866,49 +702,74 @@ namespace HollowKnight.SpritePacker
             Log("[" + GlobalData.GlobalLanguage.Main_Button3 + "] " + "Pack Done");
             Log("[" + GlobalData.GlobalLanguage.Main_Button3 + "] " + savepath);
         }
-        private Bitmap Cut(Frame frame)
+        private void ShowPic(InspectMode mode)
         {
-            if (frame.sprite == null)
+            string path;
+            switch (mode)
             {
-                return null;
-            }
-            using (Bitmap bitmap = new Bitmap(frame.info.FullName))
-            {
-                return bitmap.Clone(new Rectangle(frame.sprite.xr, bitmap.Height - frame.sprite.yr - frame.sprite.height, frame.sprite.width, frame.sprite.height), bitmap.PixelFormat);
-            }
+                case InspectMode.Animation:
+                    path = folderpath + "\\" + Anim + "\\" + Clip + "\\" + Frame;
+                    break;
 
+                case InspectMode.Collection:
+                    path = folderpath + "\\" + Anim + "\\0.Atlases\\" + Oriatlas;
+                    break;
 
-        }
-        private Bitmap Fix(Bitmap cut, Frame frame)
-        {
-            using (Bitmap temp = new Bitmap(frame.info.FullName))
+                case InspectMode.GenCollection:
+                    path = folderpath + "\\" + Anim + "\\0.Atlases\\" + Genatlas;
+                    break;
+
+                case InspectMode.AnimFrame:
+                    path = folderpath + "\\" + Anim + "\\" + Clip + "\\" + Frame;
+                    break;
+
+                case InspectMode.CollFrame:
+                    path = Collection.GetCollectionByName(Oriatlas).frames.First(f => f.info.Name == Frame).info.FullName;
+                    Anim = path.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[0];
+                    Clip = path.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[1];
+                    break;
+                case InspectMode.Backup:
+                    path = _backups.First(b => b.info.Name == Backup).info.FullName;
+                    Anim = path.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[0];
+                    Clip = path.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[1];
+                    Frame = path.Replace(new DirectoryInfo(folderpath).FullName + "\\", "").Split('\\')[2].Remove(10, 14);
+                    break;
+                default:
+                    path = "";
+                    break;
+            }
+            if (File.Exists(path))
             {
-                Bitmap fix = new Bitmap(temp);
-                for (int i = 0; i < cut.Width; i++)
+                if (pictureBox1.Image != null)
                 {
-                    for (int j = 0; j < cut.Height; j++)
-                    {
-                        fix.SetPixel(i + frame.sprite.xr, fix.Height - (j + frame.sprite.yr) - 1, cut.GetPixel(i, cut.Height - j - 1));
-                    }
+                    pictureBox1.Image.Dispose();
                 }
-                return fix;
+                pictureBox1.Image = Image.FromFile(path);
             }
         }
+
         #endregion Graphics
 
         #region Class
 
-        private class BackComparer : IComparer<string>
+        private class BackComparer : IComparer<Frame>
         {
-            private int start;
             private int len;
             private SortBy sort;
+            private int start;
+
+            public BackComparer()
+            {
+                Sort = SortBy.time;
+            }
+
             public enum SortBy
             {
                 clip,
                 id,
                 time
             }
+
             public SortBy Sort
             {
                 get
@@ -924,211 +785,42 @@ namespace HollowKnight.SpritePacker
                             len = 3;
                             sort = SortBy.clip;
                             break;
+
                         case SortBy.id:
                             start = 7;
                             len = 3;
                             sort = SortBy.id;
                             break;
+
                         case SortBy.time:
                             start = 18;
                             len = 6;
                             sort = SortBy.time;
                             break;
+
                         default:
                             break;
                     }
                 }
             }
-            public BackComparer()
+
+            public int Compare(Frame a, Frame b)
             {
-                Sort = SortBy.time;
-            }
-            public int Compare(string a, string b)
-            {
-                return a.Substring(start, len).CompareTo(b.Substring(start, len));
+                return a.info.Name.Substring(start, len).CompareTo(b.info.Name.Substring(start, len));
             }
         }
 
-        #endregion
+        #endregion Class
+
         public Form1()
         {
             InitializeComponent();
             RefreshForm();
-            if (listBox1.Items.Count > 0)
-            {
-                _anim = listBox1.Items[0].ToString();
-                RefreshList1();
-                RefreshList2();
-                if (listBox2.Items.Count > 0)
-                {
-                    _clip = listBox2.Items[0].ToString();
-                    RefreshList3();
-                }
-            }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
-
-        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (!refreshing && listBox1.SelectedItem != null)
-            {
-                _anim = listBox1.SelectedItem.ToString();
-                RefreshList1();
-                RefreshList2();
-                RefreshList3();
-                RefreshList4();
-                RefreshList5();
-                RefreshList6();
-            }
-        }
-
-        private void ListBox1_MouseClick(object sender, EventArgs eventArgs)
-        {
-        }
-
-        private void ListBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (!refreshing && listBox2.SelectedItem != null)
-            {
-                _clip = listBox2.SelectedItem.ToString();
-                RefreshList2();
-                RefreshList3();
-
-            }
-        }
-
-        private void ListBox2_MouseClick(object sender, EventArgs eventArgs)
-        {
-            timer1.Interval = 1000 / FrameRate;
-            _im = InspectMode.Animation;
-            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
-        }
-
-        private void ListBox3_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-            if (!refreshing && listBox3.SelectedItem != null)
-            {
-                refreshing = true;
-                int index = listBox8.FindStringExact(listBox3.SelectedItem.ToString());
-                if (index != ListBox.NoMatches)
-                {
-                    listBox8.SelectedIndex = index;
-                }
-                refreshing = false;
-
-                _frame = listBox3.SelectedItem.ToString();
-                ShowFrame();
-            }
-        }
-
-        private void ListBox3_MouseClick(object sender, EventArgs eventArgs)
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
-            if (_im == InspectMode.Animation)
-            {
-                _im = InspectMode.AnimFrame;
-            }
-            if (_im == InspectMode.Collection)
-            {
-                _im = InspectMode.CollFrame;
-            }
-        }
-
-        private void ListBox4_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (!refreshing && listBox4.SelectedItem != null)
-            {
-                _oriatlas = listBox4.SelectedItem.ToString();
-                RefreshList4();
-                RefreshList3();
-                ShowCollection();
-            }
-        }
-
-        private void ListBox4_MouseClick(object sender, EventArgs eventArgs)
-        {
-            goodtopack = false;
-            check = false;
-            replaceall = false;
-            button1.Visible = true;
-            _im = InspectMode.Collection;
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-        }
-
-        private void ListBox5_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (!refreshing && listBox5.SelectedItem != null)
-            {
-                _genatlas = listBox5.SelectedItem.ToString();
-                RefreshList5();
-                ShowGenCollection();
-            }
-        }
-
-        private void ListBox5_MouseClick(object sender, EventArgs eventArgs)
-        {
-            _im = InspectMode.Collection;
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-        }
-
-        private void ListBox6_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void ListBox6_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            int index = this.listBox6.IndexFromPoint(e.Location);
-            if (index >= 0)
-            {
-                refreshing = true;
-                listBox6.Items.RemoveAt(index);
-                refreshing = false;
-            }
-        }
-
-        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            GlobalData.SystemLanguage = comboBox1.SelectedItem.ToString();
-            RefreshForm();
-        }
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            goodtopack = false;
-            check = false;
-            replaceall = false;
-            modechosen = true;
-            if (comboBox2.SelectedIndex == 0)
-            {
-                fixedmode = false;
-            }
-            else if (comboBox2.SelectedIndex == 1)
-            {
-                fixedmode = true;
-            }
-        }
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            if (_im == InspectMode.Animation && listBox3.Items.Count > 0)
-            {
-                ShowFrame();
-                if (listBox3.SelectedIndex < listBox3.Items.Count - 1)
-                {
-                    listBox3.SelectedIndex++;
-                }
-                else
-                {
-                    listBox3.SelectedIndex = 0;
-                }
-            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (_im == InspectMode.Animation || _im == InspectMode.AnimFrame)
+            if (IM == InspectMode.Animation || IM == InspectMode.AnimFrame)
             {
                 Log("[Error03] " + GlobalData.GlobalLanguage.Message_Error03);
                 return;
@@ -1146,12 +838,17 @@ namespace HollowKnight.SpritePacker
             if (!goodtopack && check)
             {
                 Replace(ReplaceMode.Single);
+                RefreshList7();
+            }
+            else
+            {
+                Log("[Error06] " + GlobalData.GlobalLanguage.Message_Error06);
             }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (goodtopack && (_im == InspectMode.Collection || _im == InspectMode.CollFrame) && listBox4.SelectedIndex >= 0)
+            if (goodtopack && (IM == InspectMode.Collection || IM == InspectMode.CollFrame) && listBox4.SelectedIndex >= 0)
             {
                 foreach (var collection in Collection.collections)
                 {
@@ -1161,7 +858,6 @@ namespace HollowKnight.SpritePacker
                     }
                 }
             }
-
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -1169,26 +865,15 @@ namespace HollowKnight.SpritePacker
             RefreshForm();
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void button5_Click(object sender, EventArgs e)
         {
-            linkLabel1.LinkVisited = true;
-            System.Diagnostics.Process.Start("https://github.com/magegihk/HollowKnight.GODump");
-        }
-
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            linkLabel2.LinkVisited = true;
-            System.Diagnostics.Process.Start("https://github.com/magegihk/HollowKnight.SpritePacker");
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            backup = checkBox1.Checked;
+            Replace(ReplaceMode.Restore);
+            RefreshList7();
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            watcher = WatcherStart(folderpath, "???-??-???.png");
+            watcher = WatcherStart(folderpath + "\\" + Anim, "???-??-???.png");
             button6.Visible = false;
             Log("[" + GlobalData.GlobalLanguage.Main_Button6 + "] " + "Watcher On.");
         }
@@ -1205,49 +890,11 @@ namespace HollowKnight.SpritePacker
             if (!goodtopack && replaceall)
             {
                 Replace(ReplaceMode.All);
-                refreshing = true;
                 listBox8.Items.Clear();
-                refreshing = false;
             }
-        }
-
-        private void listBox8_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-            if (!refreshing && listBox3.SelectedItem != null)
+            else
             {
-                refreshing = true;
-                int index = listBox3.FindStringExact(listBox8.SelectedItem.ToString());
-                if (index != ListBox.NoMatches)
-                {
-                    listBox3.SelectedIndex = index;
-                }
-                refreshing = false;
-                _frame = listBox3.SelectedItem.ToString();
-                ShowFrame();
-            }
-            listBox3.TopIndex = listBox3.SelectedIndex;
-        }
-        private void listBox8_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            int index = this.listBox8.IndexFromPoint(e.Location);
-            if (index >= 0)
-            {
-                refreshing = true;
-                listBox8.Items.RemoveAt(index);
-                refreshing = false;
-            }
-        }
-        private void ListBox8_MouseClick(object sender, EventArgs eventArgs)
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
-            if (_im == InspectMode.Animation)
-            {
-                _im = InspectMode.AnimFrame;
-            }
-            if (_im == InspectMode.Collection)
-            {
-                _im = InspectMode.CollFrame;
+                Log("[Error06] " + GlobalData.GlobalLanguage.Message_Error06);
             }
         }
 
@@ -1263,14 +910,171 @@ namespace HollowKnight.SpritePacker
             RefreshList7();
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            Replace(ReplaceMode.Restore);
+            backup = checkBox1.Checked;
         }
 
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            GlobalData.SystemLanguage = comboBox1.SelectedItem.ToString();
+            RefreshForm();
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            goodtopack = false;
+            check = false;
+            replaceall = false;
+            modechosen = true;
+            if (comboBox2.SelectedIndex == 0)
+            {
+                fixedmode = false;
+            }
+            else if (comboBox2.SelectedIndex == 1)
+            {
+                fixedmode = true;
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            linkLabel1.LinkVisited = true;
+            System.Diagnostics.Process.Start("https://github.com/magegihk/HollowKnight.GODump");
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            linkLabel2.LinkVisited = true;
+            System.Diagnostics.Process.Start("https://github.com/magegihk/HollowKnight.SpritePacker");
+        }
+
+        private void ListBox1_MouseClick(object sender, EventArgs eventArgs)
+        {
+        }
+
+        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem != null)
+            {
+                RefreshList2();
+                RefreshList4();
+                RefreshList5();
+            }
+        }
+
+        private void ListBox2_MouseClick(object sender, EventArgs eventArgs)
+        {
+            IM = InspectMode.Animation;
+        }
+
+        private void ListBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox2.SelectedItem != null && (IM == InspectMode.Animation || IM == InspectMode.AnimFrame || IM == InspectMode.Backup))
+            {
+                RefreshList3();
+            }
+        }
+
+        private void ListBox3_MouseClick(object sender, EventArgs eventArgs)
+        {
+            IM = InspectMode.AnimFrame;
+        }
+
+        private void ListBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox3.SelectedItem != null)
+            {
+                Frame = listBox3.SelectedItem.ToString();
+            }
+        }
+
+        private void ListBox4_MouseClick(object sender, EventArgs eventArgs)
+        {
+            IM = InspectMode.Collection;
+        }
+
+        private void ListBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox4.SelectedItem != null && (IM == InspectMode.Collection || IM == InspectMode.CollFrame))
+            {
+                RefreshList3();
+                Oriatlas = listBox4.SelectedItem.ToString();
+            }
+        }
+
+        private void ListBox5_MouseClick(object sender, EventArgs eventArgs)
+        {
+            IM = InspectMode.GenCollection;
+        }
+
+        private void ListBox5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox5.SelectedItem != null)
+            {
+                Genatlas = listBox5.SelectedItem.ToString();
+            }
+        }
+        private void ListBox6_MouseClick(object sender, EventArgs eventArgs)
+        {
+            IM = InspectMode.AnimFrame;
+        }
+        private void ListBox6_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Frame = listBox6.SelectedItem.ToString();
+        }
+        private void ListBox7_MouseClick(object sender, EventArgs eventArgs)
+        {
+            IM = InspectMode.Backup;
+        }
         private void listBox7_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (listBox7.SelectedItem != null)
+            {
+                Backup = listBox7.SelectedItem.ToString();
+            }
+        }
 
+        private void ListBox8_MouseClick(object sender, EventArgs eventArgs)
+        {
+            IM = InspectMode.AnimFrame;
+        }
+
+        private void listBox8_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = this.listBox8.IndexFromPoint(e.Location);
+            if (index >= 0)
+            {
+                listBox8.Items.RemoveAt(index);
+            }
+        }
+
+        private void listBox8_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox3.SelectedItem != null)
+            {
+                Frame = listBox8.SelectedItem.ToString();
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (IM == InspectMode.Animation && listBox3.Items.Count > 0)
+            {
+                if (listBox3.SelectedIndex < listBox3.Items.Count - 1)
+                {
+                    listBox3.SelectedIndex++;
+                }
+                else
+                {
+                    listBox3.SelectedIndex = 0;
+                }
+                Frame = Frame;
+            }
         }
     }
 }

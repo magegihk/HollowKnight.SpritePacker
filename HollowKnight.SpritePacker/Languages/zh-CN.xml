@@ -30,5 +30,6 @@
   <Message_Error03>请先选择原始图集，再按检查。</Message_Error03>
   <Message_Error04>请先选择GODump版本。</Message_Error04>
   <Message_Error05>修改列表中有以下不属于当前图集的文件，请双击删除，否则不能正确“全替换”。（不影响“替换”）</Message_Error05>
+  <Message_Error06>请先检查再替换。</Message_Error06>
   <Message_01>可以打包。</Message_01>
 </zh-CN>

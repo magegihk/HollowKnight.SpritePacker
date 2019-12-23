@@ -30,5 +30,6 @@
   <Message_Error03>Plz choose original atlas before Check.</Message_Error03>
   <Message_Error04>Choose GODump version before Check.</Message_Error04>
   <Message_Error05>Changed Files below don't belong to the current atlas.Delete them by double click them in Changed Files or Repalce All won't work.(Nothing to do with Replace button)</Message_Error05>
+  <Message_Error06>Check before Replace.</Message_Error06>
   <Message_01>Good to go.</Message_01>
 </en-US>
