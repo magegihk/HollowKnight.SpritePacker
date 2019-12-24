@@ -318,35 +318,19 @@ namespace HollowKnight.SpritePacker
                 Collection.gencollections.Clear();
                 spritesFolder = new SpritesFolder(new DirectoryInfo(folderpath));
 
-                //refresh 1
-                Anim = RefreshList(Anim, listBox1, spritesFolder.animations.Select(a => a.info.Name).ToList());
-                //refresh 2
-                Clip = RefreshList(Clip, listBox2, spritesFolder.animations.First(a => a.info.Name == Anim).clips.Select(c => c.info.Name).ToList());
-                //refresh 3
-                if (IM == InspectMode.Animation || IM == InspectMode.AnimFrame)
-                {
-                    Frame = RefreshList(Frame, listBox3, spritesFolder.animations.First(a => a.info.Name == Anim).clips.First(c => c.info.Name == Clip).frames.Select(f => f.info.Name).ToList());
-                }
-                if (IM == InspectMode.Collection || IM == InspectMode.CollFrame || IM == InspectMode.Backup)
-                {
-                    Collection.collections.Where(c => c.info.FullName.Contains(Anim)).First(c => c.name == Oriatlas).SortFrame();
-                    Frame = RefreshList(Frame, listBox3, Collection.collections.Where(c => c.info.FullName.Contains(Anim)).First(c => c.name == Oriatlas).frames.Select(f => f.info.Name).ToList());
-                }
-                //refresh 4
-                Oriatlas = RefreshList(Oriatlas, listBox4, Collection.collections.Where(c => c.info.FullName.Contains(Anim)).Select(c => c.name).ToList());
-                //refresh 5
-                Genatlas = RefreshList(Genatlas, listBox5, Collection.gencollections.Where(g => g.info.FullName.Contains(Anim)).Select(g => g.name).ToList());
-                //refresh 6
-                listBox6.Items.Clear();
-                Log("[FolderPath] " + new DirectoryInfo(folderpath).FullName);
-                //refresh 7
-                _backups = new DirectoryInfo(folderpath).GetFiles("???-??-???[backup]??????.png", SearchOption.AllDirectories).Select(f => new Frame(f)).ToList();
-                _backups.Sort(backComparer);
-                listBox7.Items.Clear();
-                foreach (var item in _backups)
-                {
-                    listBox7.Items.Add(item.info.Name);
-                }
+                RefreshList1();
+                RefreshList2();
+                RefreshList3();
+                RefreshList4();
+                RefreshList5();
+                RefreshList6();
+                RefreshList7();
+
+                Anim = Anim;
+                Clip = Clip;
+                Frame = Frame;
+                Oriatlas = Oriatlas;
+                Genatlas = Genatlas;
             }
             else
             {
@@ -497,6 +481,10 @@ namespace HollowKnight.SpritePacker
             {
                 using (Bitmap bitmapB = Cut(b))
                 {
+                    if (bitmapA == null || bitmapB == null)
+                    {
+                        return true;
+                    }
                     bool equal = true;
                     for (int i = 0; i < bitmapA.Width; i++)
                     {
@@ -645,10 +633,18 @@ namespace HollowKnight.SpritePacker
             {
                 return null;
             }
-            using (Bitmap bitmap = new Bitmap(frame.info.FullName))
+            try
             {
-                return bitmap.Clone(new Rectangle(frame.sprite.xr, bitmap.Height - frame.sprite.yr - frame.sprite.height, frame.sprite.width, frame.sprite.height), bitmap.PixelFormat);
+                using (Bitmap bitmap = new Bitmap(frame.info.FullName))
+                {
+                    return bitmap.Clone(new Rectangle(frame.sprite.xr, bitmap.Height - frame.sprite.yr - frame.sprite.height, frame.sprite.width, frame.sprite.height), bitmap.PixelFormat);
+                }
             }
+            catch (Exception)
+            {
+                return null;
+            }
+           
         }
         private Bitmap Fix(Bitmap cut, Frame frame)
         {
@@ -673,30 +669,38 @@ namespace HollowKnight.SpritePacker
             int progression = 0;
             foreach (var frame in collection.frames)
             {
-                Bitmap image = new Bitmap(frame.info.FullName);
-
-                for (int i = 0; i < image.Width; i++)
+                try
                 {
-                    for (int j = 0; j < image.Height; j++)
+                    num++;
+
+                    Bitmap image = new Bitmap(frame.info.FullName);
+
+                    for (int i = 0; i < image.Width; i++)
                     {
-                        int xold = frame.sprite.flipped ? frame.sprite.x + j : frame.sprite.x + i;
-                        int yold = frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 : genatlas.Height - (frame.sprite.y + j) - 1;
-                        int x = (frame.sprite.flipped ? frame.sprite.x + j - (fixedmode ? frame.sprite.yr : 0) : frame.sprite.x + i - (fixedmode ? frame.sprite.xr : 0));
-                        int y = (frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 + (fixedmode ? frame.sprite.xr : 0) : genatlas.Height - (frame.sprite.y + j) - 1 + (fixedmode ? frame.sprite.yr : 0));
-                        if (!fixedmode && (0 <= x && x < genatlas.Width && 0 <= y && y < genatlas.Height) ||
-                            fixedmode && (frame.sprite.xr <= i && i < frame.sprite.xr + frame.sprite.width && frame.sprite.yr <= j && j < frame.sprite.yr + frame.sprite.height) && (0 <= xold && xold < genatlas.Width && 0 <= yold && yold < genatlas.Height))
+                        for (int j = 0; j < image.Height; j++)
                         {
-                            genatlas.SetPixel(x, y, image.GetPixel(i, image.Height - j - 1));
+                            int xold = frame.sprite.flipped ? frame.sprite.x + j : frame.sprite.x + i;
+                            int yold = frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 : genatlas.Height - (frame.sprite.y + j) - 1;
+                            int x = (frame.sprite.flipped ? frame.sprite.x + j - (fixedmode ? frame.sprite.yr : 0) : frame.sprite.x + i - (fixedmode ? frame.sprite.xr : 0));
+                            int y = (frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 + (fixedmode ? frame.sprite.xr : 0) : genatlas.Height - (frame.sprite.y + j) - 1 + (fixedmode ? frame.sprite.yr : 0));
+                            if (!fixedmode && (0 <= x && x < genatlas.Width && 0 <= y && y < genatlas.Height) ||
+                                fixedmode && (frame.sprite.xr <= i && i < frame.sprite.xr + frame.sprite.width && frame.sprite.yr <= j && j < frame.sprite.yr + frame.sprite.height) && (0 <= xold && xold < genatlas.Width && 0 <= yold && yold < genatlas.Height))
+                            {
+                                genatlas.SetPixel(x, y, image.GetPixel(i, image.Height - j - 1));
+                            }
                         }
                     }
+                    progression = (int)(100 * num / collection.frames.Count);
+                    progressBar1.Value = progression;
+                    if (progression == 100)
+                    {
+                        progressBar1.Visible = false;
+                    }
                 }
-                num++;
-                progression = (int)(100 * num / collection.frames.Count);
-                progressBar1.Value = progression;
-                if (progression == 100)
+                catch (Exception)
                 {
-                    progressBar1.Visible = false;
                 }
+                
             }
             string savepath = collection.info.DirectoryName + "\\Gen-" + collection.info.Name;
             genatlas.Save(savepath);
@@ -874,7 +878,7 @@ namespace HollowKnight.SpritePacker
 
         private void button6_Click(object sender, EventArgs e)
         {
-            watcher = WatcherStart(folderpath + "\\" + Anim, "???-??-???.png");
+            watcher = WatcherStart(folderpath, "???-??-???.png");
             button6.Visible = false;
             Log("[" + GlobalData.GlobalLanguage.Main_Button6 + "] " + "Watcher On.");
         }
@@ -975,6 +979,7 @@ namespace HollowKnight.SpritePacker
                 RefreshList2();
                 RefreshList4();
                 RefreshList5();
+                RefreshList7();
             }
         }
 
@@ -1014,7 +1019,6 @@ namespace HollowKnight.SpritePacker
             if (listBox4.SelectedItem != null && (IM == InspectMode.Collection || IM == InspectMode.CollFrame))
             {
                 RefreshList3();
-                Oriatlas = listBox4.SelectedItem.ToString();
             }
         }
 
@@ -1027,12 +1031,15 @@ namespace HollowKnight.SpritePacker
         {
             if (listBox5.SelectedItem != null)
             {
-                Genatlas = listBox5.SelectedItem.ToString();
+                
             }
         }
         private void ListBox6_MouseClick(object sender, EventArgs eventArgs)
         {
-            IM = InspectMode.AnimFrame;
+            if (listBox6.SelectedItem != null)
+            {
+                IM = InspectMode.AnimFrame;
+            }
         }
         private void ListBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1041,6 +1048,14 @@ namespace HollowKnight.SpritePacker
         private void ListBox7_MouseClick(object sender, EventArgs eventArgs)
         {
             IM = InspectMode.Backup;
+        }
+        private void listBox7_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = this.listBox7.IndexFromPoint(e.Location);
+            if (index >= 0)
+            {
+                listBox7.Items.RemoveAt(index);
+            }
         }
         private void listBox7_SelectedIndexChanged(object sender, EventArgs e)
         {

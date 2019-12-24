@@ -13,6 +13,8 @@ Pack sprites that are dumped by GODump mod back into atlas.
 7. Repeat 4. and 5. until there are no error messages
 8. Press pack button and the atlas will be generated in 0.Atlases folder.
 
+## Update
+* v1.3 Add Backup Files and Changed Files.Change code logic.Add new bugs.
 
 ## Credits
 * [Team Cherry](https://teamcherry.com.au/) - Without which, we would not have Hollow Knight.

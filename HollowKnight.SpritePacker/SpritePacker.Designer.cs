@@ -475,6 +475,7 @@
             this.listBox7.Size = new System.Drawing.Size(203, 484);
             this.listBox7.TabIndex = 26;
             this.listBox7.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListBox7_MouseClick);
+            this.listBox7.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox7_MouseDoubleClick);
             this.listBox7.SelectedIndexChanged += new System.EventHandler(this.listBox7_SelectedIndexChanged);
             // 
             // listBox8
