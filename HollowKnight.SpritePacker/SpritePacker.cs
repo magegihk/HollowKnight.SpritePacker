@@ -679,12 +679,12 @@ namespace HollowKnight.SpritePacker
                     {
                         for (int j = 0; j < image.Height; j++)
                         {
-                            int xold = frame.sprite.flipped ? frame.sprite.x + j : frame.sprite.x + i;
-                            int yold = frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 : genatlas.Height - (frame.sprite.y + j) - 1;
+                            //int xold = frame.sprite.flipped ? frame.sprite.x + j : frame.sprite.x + i;
+                            //int yold = frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 : genatlas.Height - (frame.sprite.y + j) - 1;
                             int x = (frame.sprite.flipped ? frame.sprite.x + j - (fixedmode ? frame.sprite.yr : 0) : frame.sprite.x + i - (fixedmode ? frame.sprite.xr : 0));
                             int y = (frame.sprite.flipped ? genatlas.Height - (frame.sprite.y + i) - 1 + (fixedmode ? frame.sprite.xr : 0) : genatlas.Height - (frame.sprite.y + j) - 1 + (fixedmode ? frame.sprite.yr : 0));
                             if (!fixedmode && (0 <= x && x < genatlas.Width && 0 <= y && y < genatlas.Height) ||
-                                fixedmode && (frame.sprite.xr <= i && i < frame.sprite.xr + frame.sprite.width && frame.sprite.yr <= j && j < frame.sprite.yr + frame.sprite.height) && (0 <= xold && xold < genatlas.Width && 0 <= yold && yold < genatlas.Height))
+                                fixedmode && (frame.sprite.xr <= i && i < frame.sprite.xr + frame.sprite.width && frame.sprite.yr <= j && j < frame.sprite.yr + frame.sprite.height) && (0 <= x && x < genatlas.Width && 0 <= y && y < genatlas.Height))
                             {
                                 genatlas.SetPixel(x, y, image.GetPixel(i, image.Height - j - 1));
                             }
