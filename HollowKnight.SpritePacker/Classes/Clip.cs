@@ -22,7 +22,17 @@ namespace HollowKnight.SpritePacker
             foreach (var frame in _info.GetFiles())
             {
                 if (frame.Name.Contains("-") && frame.Name.Length == 14 && !frame.Name.Contains("position") && !frame.Name.Contains("backup"))
-                    frames.Add(new Frame(frame, _spriteInfo));
+                {
+                    try
+                    {
+                        frames.Add(new Frame(frame, _spriteInfo));
+                    }
+                    catch (System.Exception)
+                    {
+                        continue;
+                        throw;
+                    }
+                }
             }
             return frames;
         }

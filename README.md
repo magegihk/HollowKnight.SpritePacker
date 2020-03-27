@@ -14,7 +14,6 @@ Pack sprites that are dumped by GODump mod back into atlas.
 8. Press Pack button and the atlas will be generated in 0.Atlases folder.
 
 * Sprites dumped by mod are needed for this app to run correctly.
-* Png files in sprites folder that are not created by mod will crash this app.
 * Replace will create backup files.You can uncheck this backup behaver.
 * You can manually add files to Changed Files or turn watcher on to automatically add those you edited and saved to Changed Files while this app is running.
 * You can replace all files in Changed Files or restore selected files in Backup Files at once.
@@ -23,6 +22,7 @@ Pack sprites that are dumped by GODump mod back into atlas.
 ## Update
 * v1.3 Add Backup Files and Changed Files.Change code logic.Add new bugs.
 * v1.3.1  Fix a logic glinch that causes border sprites not being fully packed.
+* v1.3.2  Png files in sprites folder that are not created by mod no longer crash this app.
 
 ## Credits
 * [Team Cherry](https://teamcherry.com.au/) - Without which, we would not have Hollow Knight.
