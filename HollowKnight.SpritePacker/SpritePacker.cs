@@ -954,6 +954,10 @@ namespace HollowKnight.SpritePacker
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            comboBox1.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 1;
+            checkBox1.Checked = false;
+            button6.PerformClick();
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

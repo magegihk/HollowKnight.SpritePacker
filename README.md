@@ -23,6 +23,7 @@ Pack sprites that are dumped by GODump mod back into atlas.
 * v1.3 Add Backup Files and Changed Files.Change code logic.Add new bugs.
 * v1.3.1  Fix a logic glinch that causes border sprites not being fully packed.
 * v1.3.2  Png files in sprites folder that are not created by mod no longer crash this app.
+* v1.3.3  Set default settings to Language: zh-CN, GODump: v1.3, Backup: false, Watch: On.
 
 ## Credits
 * [Team Cherry](https://teamcherry.com.au/) - Without which, we would not have Hollow Knight.
